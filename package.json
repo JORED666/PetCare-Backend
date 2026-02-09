@@ -1,0 +1,7 @@
+{
+  "name": "petcare-backend",
+  "version": "1.0.0",
+  "description": "Backend microservicios",
+  "private": true,
+  "workspaces": ["services/*", "shared"]
+}
