@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: petcare-postgres
+    image: postgres:15-alpine
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=petcare
+      - POSTGRES_PASSWORD=petcare123
+      - POSTGRES_DB=petcare
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seeds.sql:/docker-entrypoint-initdb.d/02-seeds.sql
+    networks:
+      - petcare-network
+    restart: unless-stopped
+
+  redis:
+    container_name: petcare-redis
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - petcare-network
+    restart: unless-stopped
+
+networks:
+  petcare-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
