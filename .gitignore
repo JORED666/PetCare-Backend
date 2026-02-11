@@ -29,3 +29,6 @@ coverage/
 
 # Drizzle
 drizzle/
+
+node_modules
+node_modules
