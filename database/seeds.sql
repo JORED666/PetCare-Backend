@@ -1,8 +1,3 @@
--- ==========================================
--- SEEDS - DATOS INICIALES
--- ==========================================
-
--- Roles
 INSERT INTO roles (nombre_rol, descripcion) VALUES
     ('ADMIN', 'Administrador del sistema'),
     ('VETERINARIO_ADMIN', 'Veterinario jefe con gestión de personal'),
@@ -10,7 +5,6 @@ INSERT INTO roles (nombre_rol, descripcion) VALUES
     ('CLIENTE', 'Dueño de mascotas')
 ON CONFLICT (nombre_rol) DO NOTHING;
 
--- Especies
 INSERT INTO especies (nombre) VALUES
     ('Perro'),
     ('Gato'),
@@ -21,7 +15,6 @@ INSERT INTO especies (nombre) VALUES
     ('Otro')
 ON CONFLICT (nombre) DO NOTHING;
 
--- Razas perros
 INSERT INTO razas (id_especie, nombre) VALUES
     (1, 'Labrador'),
     (1, 'Golden Retriever'),
@@ -32,8 +25,7 @@ INSERT INTO razas (id_especie, nombre) VALUES
     (1, 'Beagle'),
     (1, 'Rottweiler'),
     (1, 'Mestizo');
-
--- Razas gatos
+    
 INSERT INTO razas (id_especie, nombre) VALUES
     (2, 'Persa'),
     (2, 'Siamés'),
@@ -42,7 +34,6 @@ INSERT INTO razas (id_especie, nombre) VALUES
     (2, 'Bengal'),
     (2, 'Mestizo');
 
--- Servicios
 INSERT INTO servicios (nombre, descripcion, duracion_estimada, precio) VALUES
     ('Consulta General', 'Consulta médica general', 30, 350.00),
     ('Vacunación', 'Aplicación de vacunas', 15, 200.00),
@@ -52,7 +43,6 @@ INSERT INTO servicios (nombre, descripcion, duracion_estimada, precio) VALUES
     ('Revisión Post-operatoria', 'Seguimiento post cirugía', 20, 250.00),
     ('Baño y Estética', 'Baño y corte de pelo', 60, 300.00);
 
--- Estados de cita
 INSERT INTO estados_cita (nombre, color) VALUES
     ('PENDIENTE', '#FFA500'),
     ('CONFIRMADA', '#4CAF50'),
@@ -61,7 +51,6 @@ INSERT INTO estados_cita (nombre, color) VALUES
     ('CANCELADA', '#F44336')
 ON CONFLICT (nombre) DO NOTHING;
 
--- Motivos de consulta
 INSERT INTO motivos_consulta (nombre) VALUES
     ('Revisión General'),
     ('Enfermedad'),
@@ -72,7 +61,6 @@ INSERT INTO motivos_consulta (nombre) VALUES
     ('Seguimiento'),
     ('Otro');
 
--- Tipos de registro médico
 INSERT INTO tipos_registro_medico (nombre) VALUES
     ('CONSULTA'),
     ('VACUNA'),
@@ -81,7 +69,6 @@ INSERT INTO tipos_registro_medico (nombre) VALUES
     ('SEGUIMIENTO')
 ON CONFLICT (nombre) DO NOTHING;
 
--- Tipos de notificación
 INSERT INTO tipos_notificacion (nombre) VALUES
     ('CITA_AGENDADA'),
     ('CITA_CONFIRMADA'),
@@ -92,8 +79,6 @@ INSERT INTO tipos_notificacion (nombre) VALUES
     ('VACUNA_PROXIMA'),
     ('VETERINARIO_CREADO');
 
--- Usuario admin por defecto
--- Password: Admin123!
 INSERT INTO personal (id_rol, nombre, apellido, email, password_hash, password_temporal)
 VALUES (
     1,
