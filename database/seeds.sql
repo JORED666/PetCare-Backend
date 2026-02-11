@@ -1,7 +1,3 @@
--- ==========================================
--- SEEDS - DATOS INICIALES
--- ==========================================
-
 -- Roles
 INSERT INTO roles (nombre_rol, descripcion) VALUES
     ('ADMIN', 'Administrador del sistema'),
@@ -93,13 +89,13 @@ INSERT INTO tipos_notificacion (nombre) VALUES
     ('VETERINARIO_CREADO');
 
 -- Usuario admin por defecto
--- Password: Admin123!
+-- Password: Admin123
 INSERT INTO personal (id_rol, nombre, apellido, email, password_hash, password_temporal)
 VALUES (
     1,
     'Admin',
     'Sistema',
     'admin@petcare.com',
-    '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.',
+    '$2a$10$FRG2GYNQSN/7MiLpHdHtAOJdx/HFXdqpyyQUu1LlU4P1KqDURyXBC',
     FALSE
 ) ON CONFLICT (email) DO NOTHING;
