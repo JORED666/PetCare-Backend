@@ -64,37 +64,11 @@ cd PetCare-Backend
 cp .env.example .env
 ```
 
-Edita `.env`:
-```env
-# Database
-POSTGRES_USER=petcare
-POSTGRES_PASSWORD=petcare123
-POSTGRES_DB=petcare
-DATABASE_URL=postgresql://petcare:petcare123@localhost:5434/petcare
-
-# Redis
-REDIS_URL=redis://localhost:6379
-
-# JWT
-JWT_SECRET=tu-secret-key-aqui
-JWT_EXPIRES_IN=7d
-```
 
 #### Auth Service (`services/auth/.env`)
 
 ```bash
 cp services/auth/.env.example services/auth/.env
-```
-
-Edita `services/auth/.env`:
-```env
-PORT=3001
-NODE_ENV=development
-DATABASE_URL=postgresql://petcare:petcare123@localhost:5434/petcare
-JWT_SECRET=tu-secret-key-aqui
-JWT_EXPIRES_IN=7d
-REDIS_URL=redis://localhost:6379
-CORS_ORIGIN=http://localhost:3000
 ```
 
 ### 3. Levantar Docker
@@ -279,18 +253,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
 - `notificaciones` - Notificaciones del sistema
 - `emails_enviados` - Log de emails
 
-### Credenciales por Defecto
-
-**Admin:**
-- Email: `admin@petcare.com`
-- Password: `Admin123`
-- Tipo: `PERSONAL`
-
-**Cliente de Prueba:**
-- Email: `juan@example.com`
-- Password: `Cliente123`
-- Tipo: `CLIENTE`
-
 ### Comandos Útiles
 
 ```bash
@@ -359,14 +321,6 @@ git push origin feature/nombre-descriptivo
 git checkout develop
 git pull origin develop
 ```
-
-### Reglas de Oro
-
-❌ **NUNCA** hacer push directo a `main`  
-❌ **NUNCA** mergear a `develop` si no funciona  
-✅ **SIEMPRE** hacer pull antes de empezar  
-✅ **SIEMPRE** probar antes de mergear  
-✅ **SIEMPRE** avisar al equipo cuando mergeas
 
 ---
 
@@ -443,6 +397,9 @@ npm -v
 
 **Equipo de Desarrollo:**
 - GitHub: [JORED666/PetCare-Backend](https://github.com/JORED666/PetCare-Backend)
+- GitHub: [KarolinaTrujillo/PetCare-Backend](https://github.com/JORED666/PetCare-Backend)
+- GitHub: [iAndresML/PetCare-Backend](https://github.com/JORED666/PetCare-Backend)
+     
 
 ---
 
