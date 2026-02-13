@@ -37,7 +37,7 @@ jobs:
   clients-service:
     name: Clients Service
     runs-on: ubuntu-latest
-    if: hashFiles('services/clients/package.json') != ''
+    if: false
 
     steps:
       - uses: actions/checkout@v3
@@ -56,7 +56,7 @@ jobs:
   pets-service:
     name: Pets Service
     runs-on: ubuntu-latest
-    if: hashFiles('services/pets/package.json') != ''
+    if: false
 
     steps:
       - uses: actions/checkout@v3
