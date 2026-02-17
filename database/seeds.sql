@@ -85,6 +85,6 @@ VALUES (
     'Admin',
     'Sistema',
     'admin@petcare.com',
-    '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2uheWG/igi.',
+    '$2a$10$FRG2GYNQSN/7MiLpHdHtAOJdx/HFXdqpyyQUu1LlU4P1KqDURyXBC',
     FALSE
 ) ON CONFLICT (email) DO NOTHING;

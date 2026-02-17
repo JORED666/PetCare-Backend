@@ -1,13 +1,13 @@
 import dotenv from 'dotenv';
-dotenv.config(); 
+dotenv.config();
 
 import express, { Application } from 'express';
 import cors from 'cors';
-import authRoutes from './routes/auth.routes';
+import petsRoutes from './routes/pets.routes';
 import { errorHandler } from './middlewares/error.middleware';
 
 const app: Application = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3003;
 
 // Middlewares
 app.use(cors({
@@ -21,21 +21,21 @@ app.use(express.urlencoded({ extended: true }));
 app.get('/health', (req, res) => {
   res.json({ 
     status: 'ok', 
-    service: 'auth-service',
+    service: 'pets-service',
     timestamp: new Date().toISOString()
   });
 });
 
 // Routes
-app.use('/api/auth', authRoutes);
+app.use('/api/pets', petsRoutes);
 
 // Error handling
 app.use(errorHandler);
 
 app.listen(PORT, () => {
-  console.log(`🚀 Auth Service running on port ${PORT}`);
+  console.log(`🚀 Pets Service running on port ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔐 Auth endpoints: http://localhost:${PORT}/api/auth`);
+  console.log(`🐾 Pets endpoints: http://localhost:${PORT}/api/pets`);
 });
 
 export default app;
