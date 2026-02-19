@@ -1,0 +1,41 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
+import express, { Application } from 'express';
+import cors from 'cors';
+import petsRoutes from './routes/pets.routes';
+import { errorHandler } from './middlewares/error.middleware';
+
+const app: Application = express();
+const PORT = process.env.PORT || 3003;
+
+// Middlewares
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  credentials: true
+}));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    service: 'pets-service',
+    timestamp: new Date().toISOString()
+  });
+});
+
+// Routes
+app.use('/api/pets', petsRoutes);
+
+// Error handling
+app.use(errorHandler);
+
+app.listen(PORT, () => {
+  console.log(`🚀 Pets Service running on port ${PORT}`);
+  console.log(`📍 Health check: http://localhost:${PORT}/health`);
+  console.log(`🐾 Pets endpoints: http://localhost:${PORT}/api/pets`);
+});
+
+export default app;

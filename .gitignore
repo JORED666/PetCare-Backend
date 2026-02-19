@@ -1,5 +1,34 @@
-node_modules/
+# Build
 dist/
+build/
+*.tsbuildinfo
+
+# Environment (NUNCA subir a GitHub)
 .env
+.env.local
+.env.*.local
+services/**/.env
+
+# Logs
+logs/
 *.log
+npm-debug.log*
+
+# OS
 .DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+.nyc_output/
+
+# Drizzle
+drizzle/
+
+node_modules
+node_modules
