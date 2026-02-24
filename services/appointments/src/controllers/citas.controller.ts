@@ -3,7 +3,9 @@ import { AuthRequest } from '../middlewares/auth.middleware';
 import { db } from '../config/database';
 import { citas } from '../schemas/citas.schema';
 import { horariosDisponibles } from '../schemas/horarios.schema';
-import { eq } from 'drizzle-orm';
+import { personal } from '../schemas/personal.schema';
+import { servicios } from '../schemas/servicios.schema';
+import { eq, and, gte, lte, sql } from 'drizzle-orm';
 
 export class CitasController {
   async verificarDisponibilidad(req: Request, res: Response, next: NextFunction) {
@@ -74,11 +76,74 @@ export class CitasController {
     }
   }
 
+  async actualizar(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { id } = req.params;
+      const { id_veterinario, fecha_hora, motivo_detalle, id_estado, costo } = req.body;
+
+      const [citaActualizada] = await db
+        .update(citas)
+        .set({
+          id_veterinario: id_veterinario || undefined,
+          fecha_hora: fecha_hora || undefined,
+          motivo_detalle: motivo_detalle || undefined,
+          id_estado: id_estado || undefined,
+          costo: costo || undefined,
+          updated_at: new Date()
+        })
+        .where(eq(citas.id_cita, parseInt(id)))
+        .returning();
+
+      return res.json({ success: true, data: citaActualizada });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async cancelar(req: AuthRequest, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
       await db.update(citas).set({ id_estado: 5 }).where(eq(citas.id_cita, parseInt(id)));
       return res.json({ success: true, message: 'Cita cancelada' });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async listarPorVeterinario(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { id_veterinario } = req.params;
+      const citasVet = await db.select().from(citas).where(eq(citas.id_veterinario, parseInt(id_veterinario)));
+      return res.json({ success: true, data: citasVet });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async citasHoyVeterinario(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    const { id_veterinario } = req.params;
+    
+    const citasHoy = await db
+      .select()
+      .from(citas)
+      .where(
+        and(
+          eq(citas.id_veterinario, parseInt(id_veterinario)),
+          sql`DATE(${citas.fecha_hora}) = CURRENT_DATE`
+        )
+      );
+    
+    return res.json({ success: true, data: citasHoy, count: citasHoy.length });
+  } catch (error) {
+    next(error);
+  }
+}
+
+  async listarTodas(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const todasCitas = await db.select().from(citas);
+      return res.json({ success: true, data: todasCitas });
     } catch (error) {
       next(error);
     }
