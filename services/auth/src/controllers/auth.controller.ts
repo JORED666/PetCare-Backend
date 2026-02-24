@@ -3,7 +3,7 @@ import { db } from '../config/database';
 import { clientes } from '../schemas/clientes.schema';
 import { personal } from '../schemas/personal.schema';
 import { eq } from 'drizzle-orm';
-import { comparePassword } from '../utils/bcrypt.util';
+import { comparePassword, hashPassword } from '../utils/bcrypt.util';
 import { generateToken } from '../utils/jwt.util';
 
 export class AuthController {
@@ -117,6 +117,61 @@ export class AuthController {
       res.json({
         success: true,
         user: req.user
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async register(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { nombre, apellido, email, password, telefono, direccion } = req.body;
+
+      if (!nombre || !apellido || !email || !password) {
+        return res.status(400).json({
+          success: false,
+          error: 'Nombre, apellido, email y password son requeridos'
+        });
+      }
+
+      const [existeCliente] = await db
+        .select()
+        .from(clientes)
+        .where(eq(clientes.email, email))
+        .limit(1);
+
+      if (existeCliente) {
+        return res.status(400).json({
+          success: false,
+          error: 'Este email ya está registrado'
+        });
+      }
+
+      const passwordHash = await hashPassword(password);
+
+      const [nuevoCliente] = await db
+        .insert(clientes)
+        .values({
+          nombre,
+          apellido,
+          email,
+          password_hash: passwordHash,
+          telefono: telefono || null,
+          direccion: direccion || null,
+          password_temporal: false,
+          activo: true,
+        })
+        .returning();
+
+      return res.json({
+        success: true,
+        message: 'Cliente registrado exitosamente',
+        user: {
+          id: nuevoCliente.id_cliente,
+          nombre: nuevoCliente.nombre,
+          apellido: nuevoCliente.apellido,
+          email: nuevoCliente.email,
+        }
       });
     } catch (error) {
       next(error);
