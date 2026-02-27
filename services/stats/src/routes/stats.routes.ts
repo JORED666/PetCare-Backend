@@ -14,5 +14,6 @@ router.get('/ingresos-totales', controller.ingresosTotales.bind(controller));
 router.get('/citas-grafica', controller.citasGrafica.bind(controller));
 router.get('/rendimiento-veterinarios', controller.rendimientoVeterinarios.bind(controller));
 router.get('/veterinario/:id_veterinario/pacientes-activos', controller.veterinarioPacientesActivos.bind(controller));
+router.get('/distribucion-servicios', controller.distribucionServicios.bind(controller));
 
 export default router;

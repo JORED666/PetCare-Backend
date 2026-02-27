@@ -1,8 +1,3 @@
--- ==========================================
--- PETCARE - SCHEMA COMPLETO
--- ==========================================
-
--- Roles
 CREATE TABLE IF NOT EXISTS roles (
     id_rol SERIAL PRIMARY KEY,
     nombre_rol VARCHAR(50) UNIQUE NOT NULL,
@@ -11,7 +6,7 @@ CREATE TABLE IF NOT EXISTS roles (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Personal (veterinarios, admin)
+
 CREATE TABLE IF NOT EXISTS personal (
     id_personal SERIAL PRIMARY KEY,
     id_rol INTEGER NOT NULL REFERENCES roles(id_rol),
@@ -29,7 +24,7 @@ CREATE TABLE IF NOT EXISTS personal (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Clientes
+
 CREATE TABLE IF NOT EXISTS clientes (
     id_cliente SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -45,14 +40,14 @@ CREATE TABLE IF NOT EXISTS clientes (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Especies
+
 CREATE TABLE IF NOT EXISTS especies (
     id_especie SERIAL PRIMARY KEY,
     nombre VARCHAR(50) UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Razas
+
 CREATE TABLE IF NOT EXISTS razas (
     id_raza SERIAL PRIMARY KEY,
     id_especie INTEGER NOT NULL REFERENCES especies(id_especie),
@@ -60,7 +55,7 @@ CREATE TABLE IF NOT EXISTS razas (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Mascotas
+
 CREATE TABLE IF NOT EXISTS mascotas (
     id_mascota SERIAL PRIMARY KEY,
     id_cliente INTEGER NOT NULL REFERENCES clientes(id_cliente),
@@ -81,7 +76,7 @@ CREATE TABLE IF NOT EXISTS mascotas (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Servicios
+
 CREATE TABLE IF NOT EXISTS servicios (
     id_servicio SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -92,7 +87,7 @@ CREATE TABLE IF NOT EXISTS servicios (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Estados de cita
+
 CREATE TABLE IF NOT EXISTS estados_cita (
     id_estado SERIAL PRIMARY KEY,
     nombre VARCHAR(50) UNIQUE NOT NULL,
@@ -100,14 +95,13 @@ CREATE TABLE IF NOT EXISTS estados_cita (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Motivos de consulta
+
 CREATE TABLE IF NOT EXISTS motivos_consulta (
     id_motivo SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Citas
 CREATE TABLE IF NOT EXISTS citas (
     id_cita SERIAL PRIMARY KEY,
     id_cliente INTEGER NOT NULL REFERENCES clientes(id_cliente),
@@ -123,14 +117,14 @@ CREATE TABLE IF NOT EXISTS citas (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Tipos de registro médico
+
 CREATE TABLE IF NOT EXISTS tipos_registro_medico (
     id_tipo SERIAL PRIMARY KEY,
     nombre VARCHAR(50) UNIQUE NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Historial médico
+
 CREATE TABLE IF NOT EXISTS historial_medico (
     id_historial SERIAL PRIMARY KEY,
     id_mascota INTEGER NOT NULL REFERENCES mascotas(id_mascota),
@@ -149,7 +143,7 @@ CREATE TABLE IF NOT EXISTS historial_medico (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Prescripciones
+
 CREATE TABLE IF NOT EXISTS prescripciones (
     id_prescripcion SERIAL PRIMARY KEY,
     id_historial INTEGER NOT NULL REFERENCES historial_medico(id_historial),
@@ -162,7 +156,7 @@ CREATE TABLE IF NOT EXISTS prescripciones (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Vacunas catálogo
+
 CREATE TABLE IF NOT EXISTS vacunas (
     id_vacuna SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -171,7 +165,7 @@ CREATE TABLE IF NOT EXISTS vacunas (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Registro de vacunas aplicadas
+
 CREATE TABLE IF NOT EXISTS registro_vacunas (
     id_registro SERIAL PRIMARY KEY,
     id_mascota INTEGER NOT NULL REFERENCES mascotas(id_mascota),
@@ -185,14 +179,14 @@ CREATE TABLE IF NOT EXISTS registro_vacunas (
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Tipos de notificación
+
 CREATE TABLE IF NOT EXISTS tipos_notificacion (
     id_tipo SERIAL PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Notificaciones
+
 CREATE TABLE IF NOT EXISTS notificaciones (
     id_notificacion SERIAL PRIMARY KEY,
     id_tipo INTEGER REFERENCES tipos_notificacion(id_tipo),
@@ -206,7 +200,7 @@ CREATE TABLE IF NOT EXISTS notificaciones (
     fecha_lectura TIMESTAMP
 );
 
--- Emails enviados
+
 CREATE TABLE IF NOT EXISTS emails_enviados (
     id_email SERIAL PRIMARY KEY,
     destinatario VARCHAR(150) NOT NULL,

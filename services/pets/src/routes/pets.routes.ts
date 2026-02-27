@@ -15,5 +15,6 @@ router.get('/client/:clientId', controller.getByClientId.bind(controller));
 router.post('/', controller.create.bind(controller));
 router.put('/:id', controller.update.bind(controller));
 router.delete('/:id', controller.delete.bind(controller));
+router.get('/veterinario/:id_veterinario', authMiddleware, controller.listarPorVeterinario.bind(controller));
 
 export default router;

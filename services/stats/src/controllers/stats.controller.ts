@@ -4,6 +4,7 @@ import { db } from '../config/database';
 import { citas } from '../schemas/citas.schema';
 import { mascotas } from '../schemas/mascotas.schema';
 import { personal } from '../schemas/personal.schema';
+import { servicios } from '../schemas/servicios.schema';
 import { eq, sql, and } from 'drizzle-orm';
 
 export class StatsController {
@@ -54,6 +55,13 @@ export class StatsController {
       const { id_veterinario } = req.params;
       const result = await db.select({ count: sql<number>`count(DISTINCT ${citas.id_mascota})` }).from(citas).where(eq(citas.id_veterinario, parseInt(id_veterinario)));
       return res.json({ success: true, count: Number(result[0]?.count || 0) });
+    } catch (error) { next(error); }
+  }
+
+  async distribucionServicios(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const result = await db.select({ servicio: servicios.nombre, count: sql<number>`count(*)` }).from(citas).innerJoin(servicios, eq(citas.id_servicio, servicios.id_servicio)).groupBy(servicios.nombre).orderBy(sql`count(*) DESC`);
+      return res.json({ success: true, data: result });
     } catch (error) { next(error); }
   }
 }
