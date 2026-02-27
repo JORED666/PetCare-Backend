@@ -7,12 +7,7 @@ ON CONFLICT (nombre_rol) DO NOTHING;
 
 INSERT INTO especies (nombre) VALUES
     ('Perro'),
-    ('Gato'),
-    ('Conejo'),
-    ('Ave'),
-    ('Reptil'),
-    ('Pez'),
-    ('Otro')
+    ('Gato')
 ON CONFLICT (nombre) DO NOTHING;
 
 INSERT INTO razas (id_especie, nombre) VALUES

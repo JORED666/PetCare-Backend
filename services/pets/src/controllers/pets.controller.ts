@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { AuthRequest } from '../middlewares/auth.middleware';
 import { db } from '../config/database';
 import { mascotas, especies, razas } from '../schemas';
 import { eq } from 'drizzle-orm';
@@ -67,6 +68,25 @@ export class PetsController {
     }
   }
 
+  // GET /api/pets/veterinario/:id_veterinario - Obtener mascotas de un veterinario
+  async listarPorVeterinario(req: AuthRequest, res: Response, next: NextFunction) {
+    try {
+      const { id_veterinario } = req.params;
+      
+      const mascotasVet = await db
+        .select()
+        .from(mascotas)
+        .where(eq(mascotas.id_veterinario_cabecera, parseInt(id_veterinario)));
+
+      return res.json({
+        success: true,
+        data: mascotasVet
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   // POST /api/pets - Crear mascota
   async create(req: Request, res: Response, next: NextFunction) {
     try {
@@ -77,7 +97,7 @@ export class PetsController {
         nombre, 
         fecha_nacimiento, 
         sexo, 
-        peso_actual,  // ← CAMBIADO AQUÍ
+        peso_actual,
         color, 
         observaciones 
       } = req.body;
