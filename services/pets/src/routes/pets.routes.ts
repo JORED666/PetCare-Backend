@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { PetsController } from '../controllers/pets.controller';
+import { authMiddleware } from '../middlewares/auth.middleware'; 
 
 const router = Router();
 const controller = new PetsController();

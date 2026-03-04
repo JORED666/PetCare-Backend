@@ -35,20 +35,34 @@ export class CitasController {
   async crear(req: Request, res: Response, next: NextFunction) {
     try {
       const { id_cliente, id_mascota, id_veterinario, id_servicio, fecha_hora, motivo_detalle } = req.body;
+      
+      console.log('📅 Datos recibidos:', req.body);
+      console.log('📅 Tipo de fecha_hora:', typeof fecha_hora);
+      console.log('📅 Valor fecha_hora:', fecha_hora);
+      
       if (!id_cliente || !id_mascota || !id_servicio || !fecha_hora) {
         return res.status(400).json({ success: false, error: 'Faltan campos requeridos' });
       }
+
+      // 🔥 CONVERTIR STRING A DATE
+      const fechaHoraDate = new Date(fecha_hora);
+      
+      console.log('📅 Fecha convertida:', fechaHoraDate);
+      console.log('📅 Es válida:', !isNaN(fechaHoraDate.getTime()));
+
       const [nuevaCita] = await db.insert(citas).values({
         id_cliente,
         id_mascota,
         id_veterinario: id_veterinario || null,
         id_servicio,
         id_estado: 1,
-        fecha_hora,
+        fecha_hora: fechaHoraDate, // 🔥 Ahora es Date
         motivo_detalle: motivo_detalle || null
       }).returning();
+      
       return res.json({ success: true, data: nuevaCita });
     } catch (error) {
+      console.error('❌ Error creando cita:', error);
       next(error);
     }
   }
@@ -85,7 +99,7 @@ export class CitasController {
         .update(citas)
         .set({
           id_veterinario: id_veterinario || undefined,
-          fecha_hora: fecha_hora || undefined,
+          fecha_hora: fecha_hora ? new Date(fecha_hora) : undefined,
           motivo_detalle: motivo_detalle || undefined,
           id_estado: id_estado || undefined,
           costo: costo || undefined,
@@ -121,24 +135,24 @@ export class CitasController {
   }
 
   async citasHoyVeterinario(req: AuthRequest, res: Response, next: NextFunction) {
-  try {
-    const { id_veterinario } = req.params;
-    
-    const citasHoy = await db
-      .select()
-      .from(citas)
-      .where(
-        and(
-          eq(citas.id_veterinario, parseInt(id_veterinario)),
-          sql`DATE(${citas.fecha_hora}) = CURRENT_DATE`
-        )
-      );
-    
-    return res.json({ success: true, data: citasHoy, count: citasHoy.length });
-  } catch (error) {
-    next(error);
+    try {
+      const { id_veterinario } = req.params;
+      
+      const citasHoy = await db
+        .select()
+        .from(citas)
+        .where(
+          and(
+            eq(citas.id_veterinario, parseInt(id_veterinario)),
+            sql`DATE(${citas.fecha_hora}) = CURRENT_DATE`
+          )
+        );
+      
+      return res.json({ success: true, data: citasHoy, count: citasHoy.length });
+    } catch (error) {
+      next(error);
+    }
   }
-}
 
   async listarTodas(req: AuthRequest, res: Response, next: NextFunction) {
     try {
