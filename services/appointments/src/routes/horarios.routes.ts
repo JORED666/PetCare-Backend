@@ -5,6 +5,11 @@ import { authMiddleware } from '../middlewares/auth.middleware';
 const router = Router();
 const controller = new HorariosController();
 
+// ===== RUTAS PÚBLICAS (sin auth) - Para agendar citas =====
+router.get('/time-slots', controller.obtenerHorariosDisponibles.bind(controller));
+router.get('/availability', controller.verificarDisponibilidad.bind(controller));
+
+// ===== RUTAS PROTEGIDAS (con auth) - Para administración =====
 router.use(authMiddleware);
 
 router.get('/personal/:id_personal/horarios', controller.listar.bind(controller));
