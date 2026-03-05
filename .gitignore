@@ -4,10 +4,7 @@ build/
 *.tsbuildinfo
 
 # Environment (NUNCA subir a GitHub)
-.env
-.env.local
-.env.*.local
-services/**/.env
+
 
 # Logs
 logs/
