@@ -122,4 +122,69 @@ export class AuthController {
       next(error);
     }
   }
+
+  async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { nombre, apellido, email, password, telefono } = req.body;
+
+      if (!nombre || !email || !password) {
+        res.status(400).json({
+          success: false,
+          error: 'Nombre, email y password son requeridos'
+        });
+        return;
+      }
+
+      const [existe] = await db
+        .select()
+        .from(clientes)
+        .where(eq(clientes.email, email))
+        .limit(1);
+
+      if (existe) {
+        res.status(409).json({
+          success: false,
+          error: 'El email ya está registrado'
+        });
+        return;
+      }
+
+      const { hashPassword } = await import('../utils/bcrypt.util');
+      const password_hash = await hashPassword(password);
+
+      const [nuevoCliente] = await db
+        .insert(clientes)
+        .values({
+          nombre,
+          apellido: apellido || '',
+          email,
+          password_hash,
+          telefono: telefono || null,
+          password_temporal: false
+        })
+        .returning();
+
+      const token = generateToken({
+        id: nuevoCliente.id_cliente,
+        email: nuevoCliente.email,
+        rol: 'CLIENTE'
+      });
+
+      res.status(201).json({
+        success: true,
+        token,
+        user: {
+          id: nuevoCliente.id_cliente,
+          nombre: nuevoCliente.nombre,
+          apellido: nuevoCliente.apellido,
+          email: nuevoCliente.email,
+          rol: 'CLIENTE',
+          password_temporal: false,
+          foto_perfil: nuevoCliente.foto_perfil
+        }
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
