@@ -8,12 +8,12 @@ import { generateToken } from '../utils/jwt.util';
 export class AuthController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
-      const { email, password, tipo_usuario } = req.body;
+      const { email, password, tipo_usuario = 'CLIENTE' } = req.body;
 
-      if (!email || !password || !tipo_usuario) {
+      if (!email || !password) {
         return res.status(400).json({
           success: false,
-          error: 'Email, password y tipo_usuario son requeridos'
+          error: 'Email, password son requeridos'
         });
       }
 
@@ -74,6 +74,74 @@ export class AuthController {
       res.json({
         success: true,
         user: req.user
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { nombre, apellido, email, password, telefono } = req.body;
+
+      if (!nombre || !email || !password) {
+        res.status(400).json({
+          success: false,
+          error: 'Nombre, email y password son requeridos'
+        });
+        return;
+      }
+
+      // Verificar si el email ya existe
+      const [existe] = await db
+        .select()
+        .from(clientes)
+        .where(eq(clientes.email, email))
+        .limit(1);
+
+      if (existe) {
+        res.status(409).json({
+          success: false,
+          error: 'El email ya está registrado'
+        });
+        return;
+      }
+
+      // Hash del password
+      const { hashPassword } = await import('../utils/bcrypt.util');
+      const password_hash = await hashPassword(password);
+
+      // Insertar cliente
+      const [nuevoCliente] = await db
+        .insert(clientes)
+        .values({
+          nombre,
+          apellido: apellido || '',
+          email,
+          password_hash,
+          telefono: telefono || null,
+          password_temporal: false
+        })
+        .returning();
+
+      const token = generateToken({
+        id: nuevoCliente.id_cliente,
+        email: nuevoCliente.email,
+        rol: 'CLIENTE'
+      });
+
+      res.status(201).json({
+        success: true,
+        token,
+        user: {
+          id: nuevoCliente.id_cliente,
+          nombre: nuevoCliente.nombre,
+          apellido: nuevoCliente.apellido,
+          email: nuevoCliente.email,
+          rol: 'CLIENTE',
+          password_temporal: false,
+          foto_perfil: nuevoCliente.foto_perfil
+        }
       });
     } catch (error) {
       next(error);
