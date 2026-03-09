@@ -14,3 +14,5 @@ export const veterinarios = pgTable('veterinarios', {
   created_at: timestamp('created_at').defaultNow(),
   updated_at: timestamp('updated_at').defaultNow(),
 });
+
+export type VeterinarioRecord = typeof veterinarios.$inferSelect;
