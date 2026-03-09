@@ -1,10 +1,10 @@
 import type { Config } from 'drizzle-kit';
 
 export default {
-  schema: './src/schemas/*',
+  schema: './src/infrastructure/db/drizzle/*.schema.ts',
   out: './drizzle',
-  driver: 'pg',
+  dialect: 'postgresql',
   dbCredentials: {
-    connectionString: 'postgresql://veterinaria:vet123@localhost:5432/veterinaria',
+    url: process.env.DATABASE_URL || 'postgresql://veterinaria:vet123@localhost:5432/veterinaria',
   },
 } satisfies Config;
