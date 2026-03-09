@@ -7,4 +7,4 @@ export const reset_tokens = pgTable('reset_tokens', {
   expires_at: timestamp('expires_at').notNull(),
   used: boolean('used').notNull().default(false),
   created_at: timestamp('created_at').defaultNow(),
-});
+});export type ResetTokenRecord = typeof reset_tokens.$inferSelect;
