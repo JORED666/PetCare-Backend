@@ -3,7 +3,7 @@ services:
     container_name: petcare-postgres
     image: postgres:15-alpine
     ports:
-      - "5433:5432"
+      - "5434:5432"
     environment:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
@@ -15,6 +15,11 @@ services:
     networks:
       - petcare-network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
     container_name: petcare-redis
@@ -23,6 +28,182 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    networks:
+      - petcare-network
+    restart: unless-stopped
+
+  gateway:
+    container_name: petcare-gateway
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - CLIENT_SERVICE_URL=http://client-service:3002
+      - PET_SERVICE_URL=http://pet-service:3003
+      - CITAS_SERVICE_URL=http://citas-service:3004
+      - AGENDA_SERVICE_URL=http://agenda-service:3005
+      - HISTORIAL_SERVICE_URL=http://historial-service:3006
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3007
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGIN=${CORS_ORIGIN}
+    depends_on:
+      - auth-service
+      - client-service
+      - pet-service
+      - citas-service
+      - agenda-service
+      - historial-service
+      - notification-service
+    networks:
+      - petcare-network
+    restart: unless-stopped
+
+  auth-service:
+    container_name: petcare-auth-service
+    build:
+      context: ./services/auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRES_IN=${JWT_EXPIRES_IN}
+      - CORS_ORIGIN=http://gateway:3000
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_CALLBACK_URL=${GOOGLE_CALLBACK_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - RESET_PASSWORD_EXPIRES_IN=${RESET_PASSWORD_EXPIRES_IN}
+      - GMAIL_USER=${GMAIL_USER}
+      - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - petcare-network
+    restart: unless-stopped
+
+  client-service:
+    container_name: petcare-client-service
+    build:
+      context: ./services/client-service
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - CORS_ORIGIN=http://gateway:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - petcare-network
+    restart: unless-stopped
+
+  pet-service:
+    container_name: petcare-pet-service
+    build:
+      context: ./services/pet-service
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - CORS_ORIGIN=http://gateway:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - petcare-network
+    restart: unless-stopped
+
+  citas-service:
+    container_name: petcare-citas-service
+    build:
+      context: ./services/citas-service
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - CORS_ORIGIN=http://gateway:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - petcare-network
+    restart: unless-stopped
+
+  agenda-service:
+    container_name: petcare-agenda-service
+    build:
+      context: ./services/agenda-service
+      dockerfile: Dockerfile
+    ports:
+      - "3005:3005"
+    environment:
+      - PORT=3005
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - CORS_ORIGIN=http://gateway:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - petcare-network
+    restart: unless-stopped
+
+  historial-service:
+    container_name: petcare-historial-service
+    build:
+      context: ./services/historial-service
+      dockerfile: Dockerfile
+    ports:
+      - "3006:3006"
+    environment:
+      - PORT=3006
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - CORS_ORIGIN=http://gateway:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - petcare-network
+    restart: unless-stopped
+
+  notification-service:
+    container_name: petcare-notification-service
+    build:
+      context: ./services/notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "3007:3007"
+    environment:
+      - PORT=3007
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - GMAIL_USER=${GMAIL_USER}
+      - GMAIL_APP_PASSWORD=${GMAIL_APP_PASSWORD}
+      - CORS_ORIGIN=http://gateway:3000
+      - FRONTEND_URL=${FRONTEND_URL}
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - petcare-network
     restart: unless-stopped
