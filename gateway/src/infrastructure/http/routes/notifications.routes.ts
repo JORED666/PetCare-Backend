@@ -1,0 +1,13 @@
+import { Router } from 'express';
+import { createProxyMiddleware } from 'http-proxy-middleware';
+import { authMiddleware } from '../middlewares/auth.middleware';
+
+const router = Router();
+const NOTIFICATION_SERVICE_URL = process.env.NOTIFICATION_SERVICE_URL || 'http://localhost:3007';
+
+router.use(authMiddleware, createProxyMiddleware({
+  target: NOTIFICATION_SERVICE_URL,
+  changeOrigin: true
+}));
+
+export default router;
