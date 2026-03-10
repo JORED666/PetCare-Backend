@@ -1,20 +1,11 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD
-  }
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function sendResetPasswordEmail(to: string, token: string): Promise<void> {
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-
-  await transporter.sendMail({
-    from: `"PetCare" <${process.env.GMAIL_USER}>`,
+  await resend.emails.send({
+    from: 'PetCare <onboarding@resend.dev>',
     to,
     subject: 'Restablecer contraseña - PetCare',
     html: `
@@ -37,8 +28,8 @@ export async function sendResetPasswordEmail(to: string, token: string): Promise
 }
 
 export async function sendWelcomeEmail(to: string, nombre: string): Promise<void> {
-  await transporter.sendMail({
-    from: `"PetCare" <${process.env.GMAIL_USER}>`,
+  await resend.emails.send({
+    from: 'PetCare <onboarding@resend.dev>',
     to,
     subject: 'Bienvenido a PetCare 🐾',
     html: `
