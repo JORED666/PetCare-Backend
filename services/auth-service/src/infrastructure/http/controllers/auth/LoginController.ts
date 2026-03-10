@@ -8,7 +8,7 @@ export class LoginController {
   async handle(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await loginUseCase.execute(req.body);
-      res.json({ success: true, ...result });
+      res.json(result);
     } catch (error) {
       next(error);
     }
