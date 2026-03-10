@@ -26,14 +26,17 @@ export class LoginUseCase {
     const token = generateToken({ id: user.id, email: user.email, rol: user.rol });
 
     return {
-      token,
-      user: {
-        id: user.id,
-        nombre: user.nombre,
-        apellido: user.apellido,
-        email: user.email,
-        rol: user.rol
-      }
-    };
+    success: true as const,
+    token,
+    user: {
+      id: user.id,
+      nombre: user.nombre,
+      apellido: user.apellido,
+      email: user.email,
+      rol: user.rol,
+      password_temporal: false,
+      foto_perfil: null
+  }
+};
   }
 }

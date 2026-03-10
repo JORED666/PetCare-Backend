@@ -1,6 +1,6 @@
 import { Role } from '../../../domain/entities/Role';
-
 export interface LoginResponse {
+  success: true;
   token: string;
   user: {
     id: number;
@@ -8,5 +8,7 @@ export interface LoginResponse {
     apellido: string;
     email: string;
     rol: Role;
+    password_temporal: boolean;
+    foto_perfil: string | null;
   };
 }
