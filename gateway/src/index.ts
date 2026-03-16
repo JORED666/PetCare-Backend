@@ -19,7 +19,6 @@ app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   credentials: true
 }));
-app.use(express.json());
 app.use(requestLogger);
 
 app.get('/health', (req, res) => {
@@ -35,14 +34,14 @@ app.use('/api/historial', historialRoutes);
 app.use('/api/notifications', notificationsRoutes);
 
 app.listen(PORT, () => {
-  console.log(`íº€ Gateway running on port ${PORT}`);
-  console.log(`í³ Health check: http://localhost:${PORT}/health`);
-  console.log(`í´ Auth:      http://localhost:${PORT}/api/auth`);
-  console.log(`í±¥ Clients:   http://localhost:${PORT}/api/clients`);
-  console.log(`í°¾ Pets:      http://localhost:${PORT}/api/pets`);
-  console.log(`í³… Citas:     http://localhost:${PORT}/api/citas`);
-  console.log(`í³† Agenda:    http://localhost:${PORT}/api/agenda`);
-  console.log(`í³‹ Historial: http://localhost:${PORT}/api/historial`);
+  console.log(`ğŸš€ Gateway running on port ${PORT}`);
+  console.log(`ğŸ“ Health check: http://localhost:${PORT}/health`);
+  console.log(`ğŸ” Auth:      http://localhost:${PORT}/api/auth`);
+  console.log(`ğŸ‘¥ Clients:   http://localhost:${PORT}/api/clients`);
+  console.log(`ğŸ¾ Pets:      http://localhost:${PORT}/api/pets`);
+  console.log(`ğŸ“… Citas:     http://localhost:${PORT}/api/citas`);
+  console.log(`ğŸ“† Agenda:    http://localhost:${PORT}/api/agenda`);
+  console.log(`ğŸ“‹ Historial: http://localhost:${PORT}/api/historial`);
 });
 
 export default app;
