@@ -8,5 +8,6 @@ export interface RegisterResponse {
     apellido: string;
     email: string;
     rol: Role;
+    avatar_url?: string;
   };
 }

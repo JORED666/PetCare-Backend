@@ -7,4 +7,5 @@ export interface User {
   email: string;
   password: string;
   rol: Role;
+  avatar_url?: string; 
 }

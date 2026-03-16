@@ -3,5 +3,15 @@
   "version": "1.0.0",
   "description": "Backend microservicios",
   "private": true,
-  "workspaces": ["services/*", "shared"]
+  "workspaces": [
+    "services/*",
+    "shared"
+  ],
+  "dependencies": {
+    "cloudinary": "^2.9.0",
+    "multer": "^2.1.1"
+  },
+  "devDependencies": {
+    "@types/multer": "^2.1.0"
+  }
 }

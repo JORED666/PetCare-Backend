@@ -1,3 +1,5 @@
+// LoginUseCase
+
 import { IUserRepository } from '../../domain/repositories/IUserRepository';
 import { comparePassword } from '../../infrastructure/utils/bcrypt.util';
 import { generateToken } from '../../infrastructure/utils/jwt.util';
@@ -26,17 +28,16 @@ export class LoginUseCase {
     const token = generateToken({ id: user.id, email: user.email, rol: user.rol });
 
     return {
-    success: true as const,
-    token,
-    user: {
-      id: user.id,
-      nombre: user.nombre,
-      apellido: user.apellido,
-      email: user.email,
-      rol: user.rol,
-      password_temporal: false,
-      foto_perfil: null
-  }
-};
+      success: true as const,
+      token,
+      user: {
+        id: user.id,
+        nombre: user.nombre,
+        apellido: user.apellido,
+        email: user.email,
+        rol: user.rol,
+        avatar_url: ('avatar_url' in user ? user.avatar_url : null) ?? null,
+      },
+    };
   }
 }

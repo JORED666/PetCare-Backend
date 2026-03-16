@@ -11,6 +11,7 @@ export const users = pgTable('users', {
   activo: boolean('activo').default(true),
   created_at: timestamp('created_at').defaultNow(),
   updated_at: timestamp('updated_at').defaultNow(),
+  avatar_url: varchar('avatar_url', { length: 500 }),
 });
 
 export type UserRecord = typeof users.$inferSelect;

@@ -20,7 +20,8 @@ export class UserMapper {
       apellido: row.apellido,
       email: row.email,
       password: row.password,
-      rol: resolveRole(row.id_rol)
+      rol: resolveRole(row.id_rol),
+      avatar_url: row.avatar_url ?? undefined,
     };
   }
 
@@ -35,7 +36,8 @@ export class UserMapper {
       telefono: row.telefono,
       cedula_profesional: row.cedula_profesional,
       especialidad: row.especialidad,
-      activo: row.activo ?? true
+      activo: row.activo ?? true,
+      avatar_url: row.avatar_url ?? undefined,
     };
   }
 }

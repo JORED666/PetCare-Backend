@@ -11,4 +11,5 @@ export interface Veterinario {
   cedula_profesional?: string | null;
   especialidad?: string | null;
   activo: boolean;
+  avatar_url?: string; 
 }

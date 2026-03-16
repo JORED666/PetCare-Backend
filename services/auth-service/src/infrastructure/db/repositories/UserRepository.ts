@@ -35,7 +35,8 @@ export class UserRepository implements IUserRepository {
       apellido: user.apellido,
       email: user.email,
       password: user.password,
-      activo: true
+      activo: true,
+      avatar_url: user.avatar_url ?? null,
     }).returning();
 
     return UserMapper.toUserDomain(nuevo);
@@ -51,7 +52,8 @@ export class UserRepository implements IUserRepository {
       telefono: vet.telefono,
       cedula_profesional: vet.cedula_profesional,
       especialidad: vet.especialidad,
-      activo: true
+      activo: true,
+      avatar_url: vet.avatar_url ?? null,
     }).returning();
 
     return UserMapper.toVeterinarioDomain(nuevo);
