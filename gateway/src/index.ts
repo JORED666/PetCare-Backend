@@ -11,6 +11,7 @@ import citasRoutes from './infrastructure/http/routes/citas.routes';
 import agendaRoutes from './infrastructure/http/routes/agenda.routes';
 import notificationsRoutes from './infrastructure/http/routes/notifications.routes';
 import historialRoutes from './infrastructure/http/routes/historial.routes';
+import veterinariosRoutes from './infrastructure/http/routes/veterinarios.routes';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,6 +33,7 @@ app.use('/api/citas', citasRoutes);
 app.use('/api/agenda', agendaRoutes);
 app.use('/api/historial', historialRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/veterinarios', veterinariosRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Gateway running on port ${PORT}`);
