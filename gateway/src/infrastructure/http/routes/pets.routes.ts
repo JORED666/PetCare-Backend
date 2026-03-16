@@ -7,7 +7,8 @@ const PET_SERVICE_URL = process.env.PET_SERVICE_URL || 'http://localhost:3003';
 
 router.use(authMiddleware, createProxyMiddleware({
   target: PET_SERVICE_URL,
-  changeOrigin: true
+  changeOrigin: true,
+  pathRewrite: { '^/': '/api/pets/' },
 }));
 
 export default router;

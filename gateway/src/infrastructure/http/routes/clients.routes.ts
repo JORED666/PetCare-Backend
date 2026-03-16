@@ -7,7 +7,8 @@ const CLIENT_SERVICE_URL = process.env.CLIENT_SERVICE_URL || 'http://localhost:3
 
 router.use(authMiddleware, createProxyMiddleware({
   target: CLIENT_SERVICE_URL,
-  changeOrigin: true
+  changeOrigin: true,
+  pathRewrite: { '^/': '/api/clients/' },
 }));
 
 export default router;
