@@ -1,14 +1,14 @@
-import { pgTable, serial, integer, date, varchar, text, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, integer, timestamp, varchar, text } from 'drizzle-orm/pg-core';
 
 export const citas = pgTable('citas', {
   id_cita: serial('id_cita').primaryKey(),
   id_user: integer('id_user').notNull(),
   id_mascota: integer('id_mascota').notNull(),
   id_servicio: integer('id_servicio').notNull(),
-  id_veterinario: integer('id_veterinario').notNull(),
-  id_agenda: integer('id_agenda').notNull(),
-  fecha: date('fecha').notNull(),
-  estado: varchar('estado', { length: 20 }).notNull().default('pendiente'),
+  id_veterinario: integer('id_veterinario'),
+  id_agenda: integer('id_agenda'),
+  fecha: timestamp('fecha').notNull(),
+  estado: varchar('estado', { length: 20 }).notNull().default('PENDIENTE'),
   observaciones_cliente: text('observaciones_cliente'),
   created_at: timestamp('created_at').defaultNow(),
   updated_at: timestamp('updated_at').defaultNow(),
