@@ -1,4 +1,4 @@
-import { cloudinary } from './config';
+import { getCloudinary } from './config';
 import { Readable } from 'stream';
 
 function bufferToStream(buffer: Buffer): Readable {
@@ -8,10 +8,8 @@ function bufferToStream(buffer: Buffer): Readable {
   return stream;
 }
 
-export async function uploadImage(
-  fileBuffer: Buffer,
-  folder: string,
-): Promise<string> {
+export async function uploadImage(fileBuffer: Buffer, folder: string): Promise<string> {
+  const cloudinary = getCloudinary();
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
       { folder, resource_type: 'image' },
@@ -33,9 +31,9 @@ export async function uploadPetImage(fileBuffer: Buffer): Promise<string> {
 }
 
 export async function deleteImage(imageUrl: string): Promise<void> {
+  const cloudinary = getCloudinary();
   const publicId = extractPublicId(imageUrl);
   if (!publicId) throw new Error('No se pudo extraer el publicId de la URL');
-
   await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
 }
 
