@@ -6,9 +6,17 @@ Sistema de gestión veterinaria - Microservicios con Node.js, TypeScript, Postgr
 
 - [Stack Tecnológico](#stack-tecnológico)
 - [Arquitectura](#arquitectura)
+- [URLs de Producción](#urls-de-producción)
 - [Configuración Inicial](#configuración-inicial)
-- [Servicios Disponibles](#servicios-disponibles)
+- [Autenticación](#autenticación)
 - [API Endpoints](#api-endpoints)
+  - [Auth](#-auth-service)
+  - [Clientes](#-client-service)
+  - [Mascotas](#-pet-service)
+  - [Citas](#-citas-service)
+  - [Agenda](#-agenda-service)
+  - [Historial](#-historial-service)
+  - [Notificaciones](#-notification-service)
 - [Base de Datos](#base-de-datos)
 - [Workflow de Git](#workflow-de-git)
 - [Testing](#testing)
@@ -21,11 +29,11 @@ Sistema de gestión veterinaria - Microservicios con Node.js, TypeScript, Postgr
 - **Lenguaje:** TypeScript
 - **Framework:** Express
 - **Base de Datos:** PostgreSQL 15
-- **Cache:** Redis 7
 - **ORM:** Drizzle ORM
-- **Autenticación:** JWT + bcrypt
+- **Autenticación:** JWT + bcrypt + Google OAuth
+- **Almacenamiento:** Cloudinary (avatares)
+- **Email:** Resend
 - **Containerización:** Docker + Docker Compose
-- **CI/CD:** GitHub Actions
 
 ---
 
@@ -33,17 +41,37 @@ Sistema de gestión veterinaria - Microservicios con Node.js, TypeScript, Postgr
 
 ```
 petcare-backend/
+├── gateway/                  # Punto de entrada único (Puerto 3000)
 ├── services/
-│   ├── auth/          # Autenticación (Puerto 3001)
-│   ├── clients/       # Gestión de clientes (Puerto 3002)
-│   ├── pets/          # Gestión de mascotas (Puerto 3003)
-│   ├── appointments/  # Citas (Puerto 3004)
-│   ├── medical/       # Historial médico (Puerto 3005)
-│   └── notifications/ # Notificaciones (Puerto 3006)
-├── shared/            # Código compartido
-├── database/          # Schemas y seeds SQL
-└── docker-compose.yml # Configuración de contenedores
+│   ├── auth-service/         # Autenticación (Puerto 3001)
+│   ├── client-service/       # Gestión de clientes (Puerto 3002)
+│   ├── pet-service/          # Gestión de mascotas (Puerto 3003)
+│   ├── citas-service/        # Citas (Puerto 3004)
+│   ├── agenda-service/       # Agenda veterinarios (Puerto 3005)
+│   ├── historial-service/    # Historial médico (Puerto 3006)
+│   └── notification-service/ # Notificaciones (Puerto 3007)
+├── shared/                   # Código compartido
+├── database/                 # Schemas y seeds SQL
+└── docker-compose.yml
 ```
+
+---
+
+## 🌐 URLs de Producción
+
+> ⚠️ El frontend siempre debe usar la URL del **Gateway**. Nunca llamar directamente a los servicios individuales.
+
+| Servicio | URL |
+|----------|-----|
+| 🚪 **Gateway** ← usar este | `https://gateway-e45z.onrender.com` |
+| Auth Service | `https://petcare-backend-yl6n.onrender.com` |
+| Client Service | `https://client-service-81cm.onrender.com` |
+| Pet Service | `https://pet-service-zotj.onrender.com` |
+| Citas Service | `https://citas-service.onrender.com` |
+| Agenda Service | `https://agenda-service-h3ji.onrender.com` |
+| Historial Service | `https://historial-service.onrender.com` |
+| Notification Service | `https://notification-service-jr2s.onrender.com` |
+| Frontend | `https://pet-care-frontend-gold.vercel.app` |
 
 ---
 
@@ -58,135 +86,94 @@ cd PetCare-Backend
 
 ### 2. Configurar variables de entorno
 
-#### Raíz del proyecto (`.env`)
+Cada servicio necesita su propio `.env`. Ejemplo para `auth-service`:
 
-```bash
-cp .env.example .env
+```env
+DATABASE_URL=postgresql://usuario:password@localhost:5432/veterinaria
+JWT_SECRET=tu_jwt_secret
+RESEND_API_KEY=re_xxxxxxxxxxxx
+FRONTEND_URL=http://localhost:3000
+CLOUDINARY_NAME=tu_cloud_name
+CLOUDINARY_API_KEY=tu_api_key
+CLOUDINARY_API_SECRET=tu_api_secret
+GOOGLE_CLIENT_ID=tu_google_client_id
+GOOGLE_CLIENT_SECRET=tu_google_client_secret
+GOOGLE_CALLBACK_URL=http://localhost:3001/api/auth/google/callback
 ```
 
+Variables del gateway:
 
-#### Auth Service (`services/auth/.env`)
-
-```bash
-cp services/auth/.env.example services/auth/.env
+```env
+AUTH_SERVICE_URL=http://localhost:3001
+CLIENT_SERVICE_URL=http://localhost:3002
+PET_SERVICE_URL=http://localhost:3003
+CITAS_SERVICE_URL=http://localhost:3004
+AGENDA_SERVICE_URL=http://localhost:3005
+HISTORIAL_SERVICE_URL=http://localhost:3006
+NOTIFICATION_SERVICE_URL=http://localhost:3007
+CORS_ORIGIN=http://localhost:3000
 ```
 
-### 3. Levantar Docker
+### 3. Instalar dependencias y correr
 
 ```bash
-docker-compose up -d
-```
-
-Verifica que estén corriendo:
-```bash
-docker-compose ps
-```
-
-Deberías ver:
-- `petcare-postgres` en puerto 5434
-- `petcare-redis` en puerto 6379
-
-### 4. Instalar dependencias
-
-```bash
-# Auth Service
-cd services/auth
+cd services/auth-service
 npm install
-```
-
-### 5. Correr el servicio
-
-```bash
 npm run dev
 ```
 
-El servicio estará corriendo en `http://localhost:3001`
-
 ---
 
-## 🚀 Servicios Disponibles
+## 🔒 Autenticación
 
-### Auth Service (Puerto 3001)
+Los endpoints protegidos requieren un **Bearer Token** en el header:
 
-**Estado:** ✅ Funcionando
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
+```
 
-#### Endpoints:
-
-| Método | Endpoint | Descripción | Autenticación |
-|--------|----------|-------------|---------------|
-| GET | `/health` | Health check | No |
-| POST | `/api/auth/login` | Login de usuarios | No |
-| GET | `/api/auth/me` | Obtener usuario actual | Sí (Bearer Token) |
+El token se obtiene al hacer login y expira en **7 días**.
 
 ---
 
 ## 📡 API Endpoints
 
+> **Base URL producción:** `https://gateway-e45z.onrender.com`
+> 
+> **Base URL local:** `http://localhost:3000`
+
+---
+
 ### 🔐 Auth Service
 
-#### 1. Health Check
+| Método | Endpoint | Descripción | 🔒 Auth |
+|--------|----------|-------------|---------|
+| `POST` | `/api/auth/register` | Registrar nuevo cliente | No |
+| `POST` | `/api/auth/login` | Iniciar sesión | No |
+| `GET` | `/api/auth/me` | Obtener usuario actual | ✅ |
+| `GET` | `/api/auth/google` | Iniciar autenticación con Google | No |
+| `GET` | `/api/auth/google/callback` | Callback OAuth de Google | No |
+| `POST` | `/api/auth/forgot-password` | Solicitar reset de contraseña | No |
+| `POST` | `/api/auth/reset-password` | Restablecer contraseña con token | No |
+| `POST` | `/api/veterinarios/registrar` | Registrar veterinario | ✅ ADMIN |
+| `GET` | `/api/veterinarios/listar` | Listar veterinarios | ✅ |
+| `PUT` | `/api/veterinarios/cambiar-password` | Cambiar contraseña | ✅ |
 
-```bash
-GET http://localhost:3001/health
-```
+#### POST `/api/auth/register`
 
-**Respuesta:**
-```json
-{
-  "status": "ok",
-  "service": "auth-service",
-  "timestamp": "2026-02-13T02:08:59.212Z"
-}
-```
+> Content-Type: `multipart/form-data`
 
----
+| Campo | Tipo | Requerido | Descripción |
+|-------|------|-----------|-------------|
+| `nombre` | string | ✅ | Nombre del usuario |
+| `apellido` | string | ✅ | Apellido del usuario |
+| `email` | string | ✅ | Correo electrónico |
+| `password` | string | ✅ | Contraseña |
+| `telefono` | string | ❌ | Teléfono de contacto |
+| `avatar` | file | ❌ | Foto de perfil (imagen, máx. 5MB) |
 
-#### 2. Login (PERSONAL)
+Respuesta:
 
-```bash
-POST http://localhost:3001/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "admin@petcare.com",
-  "password": "Admin123",
-  "tipo_usuario": "PERSONAL"
-}
-```
-
-**Respuesta:**
-```json
-{
-  "success": true,
-  "token": "eyJhbGciOiJIUzI1NiIs...",
-  "user": {
-    "id": 1,
-    "nombre": "Admin",
-    "apellido": "Sistema",
-    "email": "admin@petcare.com",
-    "rol": "ADMIN",
-    "password_temporal": false,
-    "foto_perfil": null
-  }
-}
-```
-
----
-
-#### 3. Login (CLIENTE)
-
-```bash
-POST http://localhost:3001/api/auth/login
-Content-Type: application/json
-
-{
-  "email": "juan@example.com",
-  "password": "Cliente123",
-  "tipo_usuario": "CLIENTE"
-}
-```
-
-**Respuesta:**
 ```json
 {
   "success": true,
@@ -196,35 +183,286 @@ Content-Type: application/json
     "nombre": "Juan",
     "apellido": "Pérez",
     "email": "juan@example.com",
-    "rol": "CLIENTE",
-    "password_temporal": false,
-    "foto_perfil": null
+    "rol": "USER",
+    "avatar_url": "https://res.cloudinary.com/..."
   }
 }
 ```
 
----
+#### POST `/api/auth/login`
 
-#### 4. Obtener Usuario Actual (Protegido)
+```json
+{
+  "email": "juan@example.com",
+  "password": "MiPassword123"
+}
+```
 
-```bash
-GET http://localhost:3001/api/auth/me
+Respuesta:
+
+```json
+{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIs...",
+  "user": {
+    "id": 1,
+    "nombre": "Juan",
+    "apellido": "Pérez",
+    "email": "juan@example.com",
+    "rol": "CLIENTE"
+  }
+}
+```
+
+#### GET `/api/auth/me` 🔒
+
+```
 Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
 ```
 
-**Respuesta:**
+Respuesta:
+
 ```json
 {
   "success": true,
   "user": {
     "id": 1,
-    "email": "admin@petcare.com",
-    "rol": "ADMIN",
+    "email": "juan@example.com",
+    "rol": "CLIENTE",
     "iat": 1770948550,
     "exp": 1771553350
   }
 }
 ```
+
+#### POST `/api/auth/forgot-password`
+
+```json
+{
+  "email": "juan@example.com"
+}
+```
+
+#### POST `/api/auth/reset-password`
+
+```json
+{
+  "token": "abc123...",
+  "new_password": "NuevoPassword123"
+}
+```
+
+#### PUT `/api/veterinarios/cambiar-password` 🔒
+
+```json
+{
+  "password_actual": "PasswordActual",
+  "password_nueva": "NuevoPassword123"
+}
+```
+
+#### POST `/api/veterinarios/registrar` 🔒 ADMIN
+
+> Soporta `multipart/form-data` para subir avatar.
+
+```json
+{
+  "nombre": "Dr. Carlos",
+  "apellido": "García",
+  "email": "dr.carlos@petcare.com",
+  "password": "VetPassword123",
+  "telefono": "+52 555 987 6543",
+  "cedula_profesional": "12345678",
+  "especialidad": "Cirugía"
+}
+```
+
+Campo adicional form-data: `avatar` (imagen, opcional, máx. 5MB)
+
+---
+
+### 👤 Client Service
+
+| Método | Endpoint | Descripción | 🔒 Auth |
+|--------|----------|-------------|---------|
+| `GET` | `/api/clients` | Listar todos los clientes | ✅ |
+| `GET` | `/api/clients/:id` | Obtener cliente por ID | ✅ |
+| `PUT` | `/api/clients/:id` | Actualizar cliente | ✅ |
+| `DELETE` | `/api/clients/:id` | Eliminar cliente | ✅ |
+
+#### PUT `/api/clients/:id` 🔒
+
+> Todos los campos son opcionales.
+
+```json
+{
+  "nombre": "Juan",
+  "apellido": "Pérez",
+  "email": "nuevo@mail.com",
+  "telefono": "+52 555 000 1111"
+}
+```
+
+---
+
+### 🐶 Pet Service
+
+| Método | Endpoint | Descripción | 🔒 Auth |
+|--------|----------|-------------|---------|
+| `GET` | `/api/pets` | Listar todas las mascotas | ✅ |
+| `GET` | `/api/pets/:id` | Obtener mascota por ID | ✅ |
+| `GET` | `/api/pets/user/:userId` | Mascotas de un usuario | ✅ |
+| `POST` | `/api/pets` | Registrar nueva mascota | ✅ |
+| `PUT` | `/api/pets/:id` | Actualizar mascota | ✅ |
+| `DELETE` | `/api/pets/:id` | Eliminar mascota | ✅ |
+
+#### POST `/api/pets` 🔒
+
+```json
+{
+  "id_user": 1,
+  "especie": "Perro",
+  "nombre": "Max",
+  "fecha_nacimiento": "2020-05-10",
+  "sexo": "Macho",
+  "peso": 12.5
+}
+```
+
+> `especie`: `"Perro"` | `"Gato"`
+
+#### PUT `/api/pets/:id` 🔒
+
+> Todos los campos son opcionales.
+
+```json
+{
+  "nombre": "Max",
+  "especie": "Perro",
+  "fecha_nacimiento": "2020-05-10",
+  "sexo": "Macho",
+  "peso": 13.0
+}
+```
+
+---
+
+### 📅 Citas Service
+
+| Método | Endpoint | Descripción | 🔒 Auth |
+|--------|----------|-------------|---------|
+| `GET` | `/api/citas` | Listar todas las citas | ✅ |
+| `GET` | `/api/citas/:id` | Obtener cita por ID | ✅ |
+| `POST` | `/api/citas` | Crear nueva cita | ✅ |
+| `PUT` | `/api/citas/:id/status` | Actualizar estado de cita | ✅ |
+| `DELETE` | `/api/citas/:id` | Eliminar cita | ✅ |
+
+#### POST `/api/citas` 🔒
+
+```json
+{
+  "id_user": 1,
+  "id_mascota": 3,
+  "id_servicio": 2,
+  "id_agenda": 10,
+  "fecha": "2026-04-15",
+  "observaciones_cliente": "Perro con fiebre desde ayer"
+}
+```
+
+#### PUT `/api/citas/:id/status` 🔒
+
+```json
+{
+  "estado": "CONFIRMADA"
+}
+```
+
+> `estado`: `PENDIENTE` | `CONFIRMADA` | `CANCELADA` | `COMPLETADA`
+
+---
+
+### 🗓️ Agenda Service
+
+| Método | Endpoint | Descripción | 🔒 Auth |
+|--------|----------|-------------|---------|
+| `GET` | `/api/agenda/veterinario/:vetId` | Agenda de un veterinario | ✅ |
+| `POST` | `/api/agenda` | Crear slot de disponibilidad | ✅ |
+| `PUT` | `/api/agenda/:id/status` | Actualizar estado de slot | ✅ |
+| `DELETE` | `/api/agenda/:id` | Eliminar slot | ✅ |
+
+#### POST `/api/agenda` 🔒
+
+```json
+{
+  "veterinario_id": 2,
+  "fecha": "2026-04-15",
+  "dia_nombre": "martes",
+  "hora_inicio": "09:00",
+  "hora_fin": "10:00"
+}
+```
+
+> `dia_nombre`: `lunes` | `martes` | `miercoles` | `jueves` | `viernes` | `sabado` | `domingo`
+
+#### PUT `/api/agenda/:id/status` 🔒
+
+```json
+{
+  "estado": "DISPONIBLE"
+}
+```
+
+> `estado`: `disponible` | `ocupado` | `bloqueado`
+
+---
+
+### 📋 Historial Service
+
+| Método | Endpoint | Descripción | 🔒 Auth |
+|--------|----------|-------------|---------|
+| `GET` | `/api/historial/mascota/:mascotaId` | Historial de una mascota | ✅ |
+| `POST` | `/api/historial` | Crear registro médico | ✅ |
+
+#### POST `/api/historial` 🔒
+
+```json
+{
+  "id_mascota": 3,
+  "id_cita": 7,
+  "id_veterinario": 2,
+  "diagnostico": "Infección leve",
+  "tratamiento": "Antibióticos 7 días",
+  "observaciones": "Control en una semana"
+}
+```
+
+---
+
+### 🔔 Notification Service
+
+| Método | Endpoint | Descripción | 🔒 Auth |
+|--------|----------|-------------|---------|
+| `POST` | `/api/notifications/send` | Enviar notificación por email | No |
+
+#### POST `/api/notifications/send`
+
+```json
+{
+  "to": "cliente@example.com",
+  "type": "CITA_CONFIRMADA",
+  "data": {
+    "nombre": "Juan",
+    "fecha": "2026-04-15",
+    "hora": "09:00",
+    "servicio": "Consulta general",
+    "veterinario": "Dr. Carlos García",
+    "motivo": "Fiebre"
+  }
+}
+```
+
+> `type`: `CITA_CONFIRMADA` | `RECORDATORIO_CITA` | `BIENVENIDA` | `RESET_PASSWORD`
 
 ---
 
@@ -304,15 +542,10 @@ git commit -m "feat: descripción del cambio"
 #### 3. Al terminar el día (si funciona)
 
 ```bash
-# Verificar que todo funciona
 npm run dev
 
-# Push a tu feature branch
 git push origin feature/nombre-descriptivo
-
-# Crear Pull Request en GitHub
-# Esperar revisión
-# Mergear a develop
+# Crear Pull Request en GitHub → mergear a develop
 ```
 
 #### 4. Actualizar tu rama local
@@ -329,66 +562,49 @@ git pull origin develop
 ### Probar con curl
 
 ```bash
-# Health check
-curl http://localhost:3001/health
+# Health check gateway
+curl https://gateway-e45z.onrender.com/health
 
 # Login
-curl -X POST http://localhost:3001/api/auth/login \
+curl -X POST https://gateway-e45z.onrender.com/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@petcare.com","password":"Admin123","tipo_usuario":"PERSONAL"}'
+  -d '{"email":"admin@petcare.com","password":"Admin123"}'
 
 # Endpoint protegido
-curl http://localhost:3001/api/auth/me \
+curl https://gateway-e45z.onrender.com/api/auth/me \
   -H "Authorization: Bearer TU_TOKEN_AQUI"
 ```
 
 ### Probar con Postman
 
-1. Importar colección desde `/postman/PetCare.postman_collection.json`
-2. Configurar environment con `BASE_URL=http://localhost:3001`
-3. Ejecutar requests
+1. Configurar variable de entorno: `BASE_URL=https://gateway-e45z.onrender.com`
+2. Hacer login y guardar el token
+3. Usar `{{token}}` en los headers de endpoints protegidos
 
 ---
 
 ## 🚨 Troubleshooting
 
-### Puerto 5434 ocupado
+### Puerto ocupado
 
 ```bash
-# Ver qué está usando el puerto
-sudo lsof -i :5434
-
-# Matar el proceso
-sudo kill -9 $(sudo lsof -t -i:5434)
-
-# Reiniciar Docker
-docker-compose down
-docker-compose up -d
+sudo lsof -i :3001
+sudo kill -9 $(sudo lsof -t -i:3001)
 ```
 
 ### Base de datos no conecta
 
 ```bash
-# Verificar que Docker esté corriendo
 docker-compose ps
-
-# Ver logs de PostgreSQL
 docker-compose logs -f postgres
-
-# Verificar DATABASE_URL en .env
-cat services/auth/.env
 ```
 
 ### TypeScript no compila
 
 ```bash
-# Limpiar y reinstalar
 rm -rf node_modules package-lock.json
 npm install
-
-# Verificar versiones
 node -v  # Debe ser 20+
-npm -v
 ```
 
 ---
@@ -399,7 +615,6 @@ npm -v
 - GitHub: [JORED666/PetCare-Backend](https://github.com/JORED666/PetCare-Backend)
 - GitHub: [KarolinaTrujillo/PetCare-Backend](https://github.com/JORED666/PetCare-Backend)
 - GitHub: [iAndresML/PetCare-Backend](https://github.com/JORED666/PetCare-Backend)
-     
 
 ---
 
