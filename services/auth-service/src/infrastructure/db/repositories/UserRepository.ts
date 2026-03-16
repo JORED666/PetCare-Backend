@@ -35,6 +35,7 @@ export class UserRepository implements IUserRepository {
       apellido: user.apellido,
       email: user.email,
       password: user.password,
+      telefono: user.telefono,
       activo: true,
       avatar_url: user.avatar_url ?? null,
     }).returning();
