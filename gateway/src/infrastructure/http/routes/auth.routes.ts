@@ -7,7 +7,7 @@ const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3001'
 router.use(createProxyMiddleware({
   target: AUTH_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: { '^/': '/api/auth/' },
+  pathRewrite: (path) => `/api/auth${path}`,
   proxyTimeout: 30000,
   timeout: 30000,
 }));

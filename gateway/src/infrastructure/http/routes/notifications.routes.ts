@@ -7,7 +7,7 @@ const NOTIFICATION_SERVICE_URL = process.env.NOTIFICATION_SERVICE_URL || 'http:/
 router.use(createProxyMiddleware({
   target: NOTIFICATION_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: { '^/': '/api/notifications/' },
+  pathRewrite: (path) => `/api/notifications${path}`,
 }));
 
 export default router;

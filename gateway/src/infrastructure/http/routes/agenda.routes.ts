@@ -8,7 +8,7 @@ const AGENDA_SERVICE_URL = process.env.AGENDA_SERVICE_URL || 'http://localhost:3
 router.use(authMiddleware, createProxyMiddleware({
   target: AGENDA_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: { '^/': '/api/agenda/' },
+  pathRewrite: (path) => `/api/agenda${path}`,
 }));
 
 export default router;

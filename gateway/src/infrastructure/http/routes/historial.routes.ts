@@ -8,7 +8,7 @@ const HISTORIAL_SERVICE_URL = process.env.HISTORIAL_SERVICE_URL || 'http://local
 router.use(authMiddleware, createProxyMiddleware({
   target: HISTORIAL_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: { '^/': '/api/historial/' },
+  pathRewrite: (path) => `/api/historial${path}`,
 }));
 
 export default router;

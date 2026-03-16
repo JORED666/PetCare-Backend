@@ -8,7 +8,7 @@ const CITAS_SERVICE_URL = process.env.CITAS_SERVICE_URL || 'http://localhost:300
 router.use(authMiddleware, createProxyMiddleware({
   target: CITAS_SERVICE_URL,
   changeOrigin: true,
-  pathRewrite: { '^/': '/api/citas/' },
+  pathRewrite: (path) => `/api/citas${path}`,
 }));
 
 export default router;
