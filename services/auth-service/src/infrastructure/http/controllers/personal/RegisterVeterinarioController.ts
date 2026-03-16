@@ -10,7 +10,7 @@ const storage = multer.memoryStorage();
 export const uploadMiddleware = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 },
-  fileFilter: (_req, file, cb) => {
+  fileFilter: (_req, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     if (!file.mimetype.startsWith('image/')) return cb(new Error('Solo se permiten imágenes'));
     cb(null, true);
   },
@@ -43,7 +43,7 @@ export class RegisterVeterinarioController {
         cedula_profesional,
         especialidad,
         activo: true,
-        avatar_url: avatarUrl,  
+        avatar_url: avatarUrl,
       });
 
       res.status(201).json({ success: true, data: veterinario });

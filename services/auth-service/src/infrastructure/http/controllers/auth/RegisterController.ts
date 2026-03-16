@@ -8,13 +8,13 @@ const storage = multer.memoryStorage();
 export const uploadMiddleware = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
-  fileFilter: (_req, file, cb) => {
+  fileFilter: (_req, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
     if (!file.mimetype.startsWith('image/')) {
       return cb(new Error('Solo se permiten imágenes'));
     }
     cb(null, true);
   },
-}).single('avatar'); // campo del form-data
+}).single('avatar');
 
 const registerUseCase = new RegisterUseCase(new UserRepository());
 

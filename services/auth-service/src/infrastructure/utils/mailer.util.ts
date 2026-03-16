@@ -1,8 +1,13 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+function getResend() {
+  const key = process.env.RESEND_API_KEY;
+  if (!key) throw new Error('RESEND_API_KEY no está definida');
+  return new Resend(key);
+}
 
 export async function sendResetPasswordEmail(to: string, token: string): Promise<void> {
+  const resend = getResend();
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
   await resend.emails.send({
     from: 'PetCare <onboarding@resend.dev>',
@@ -28,6 +33,7 @@ export async function sendResetPasswordEmail(to: string, token: string): Promise
 }
 
 export async function sendWelcomeEmail(to: string, nombre: string): Promise<void> {
+  const resend = getResend();
   await resend.emails.send({
     from: 'PetCare <onboarding@resend.dev>',
     to,
