@@ -1,5 +1,3 @@
-// RegisterUseCase
-
 import { IUserRepository } from '../../domain/repositories/IUserRepository';
 import { hashPassword } from '../../infrastructure/utils/bcrypt.util';
 import { generateToken } from '../../infrastructure/utils/jwt.util';
@@ -15,14 +13,14 @@ export class RegisterUseCase {
     if (existe) throw new Error('El email ya está registrado');
 
     const password = await hashPassword(dto.password);
-
     const nuevoUser = await this.userRepository.create({
       nombre: dto.nombre,
       apellido: dto.apellido,
       email: dto.email,
       password,
+      telefono: dto.telefono,
       rol: Role.USER,
-      avatar_url: avatarUrl,   
+      avatar_url: avatarUrl,
     });
 
     const token = generateToken({
@@ -38,8 +36,9 @@ export class RegisterUseCase {
         nombre: nuevoUser.nombre,
         apellido: nuevoUser.apellido,
         email: nuevoUser.email,
+        telefono: nuevoUser.telefono,
         rol: nuevoUser.rol,
-        avatar_url: nuevoUser.avatar_url, 
+        avatar_url: nuevoUser.avatar_url,
       },
     };
   }

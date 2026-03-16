@@ -20,6 +20,7 @@ export class UserMapper {
       apellido: row.apellido,
       email: row.email,
       password: row.password,
+      telefono: row.telefono ?? undefined,
       rol: resolveRole(row.id_rol),
       avatar_url: row.avatar_url ?? undefined,
     };

@@ -8,6 +8,7 @@ export interface LoginResponse {
     nombre: string;
     apellido: string;
     email: string;
+    telefono?: string;
     rol: Role;
     avatar_url: string | null;
   };
