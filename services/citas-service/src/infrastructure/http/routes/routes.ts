@@ -7,19 +7,18 @@ import { DeleteCitaController } from '../controllers/citas/DeleteCitaController'
 import { GetCitasDetalleController } from '../controllers/citas/GetCitasDetalleController';
 
 const router = Router();
+const getAllCitasController       = new GetAllCitasController();
+const getCitaByIdController       = new GetCitaByIdController();
+const createCitaController        = new CreateCitaController();
+const updateCitaStatusController  = new UpdateCitaStatusController();
+const deleteCitaController        = new DeleteCitaController();
+const getCitasDetalleController   = new GetCitasDetalleController();
 
-const getAllCitasController = new GetAllCitasController();
-const getCitaByIdController = new GetCitaByIdController();
-const createCitaController = new CreateCitaController();
-const updateCitaStatusController = new UpdateCitaStatusController();
-const deleteCitaController = new DeleteCitaController();
-const getCitasDetalleController = new GetCitasDetalleController();
-
+router.get('/citas/detalle', getCitasDetalleController.handle.bind(getCitasDetalleController));
 router.get('/citas', getAllCitasController.handle.bind(getAllCitasController));
 router.get('/citas/:id', getCitaByIdController.handle.bind(getCitaByIdController));
 router.post('/citas', createCitaController.handle.bind(createCitaController));
 router.put('/citas/:id/status', updateCitaStatusController.handle.bind(updateCitaStatusController));
 router.delete('/citas/:id', deleteCitaController.handle.bind(deleteCitaController));
-router.get('/citas/detalle', getCitasDetalleController.handle.bind(getCitasDetalleController));
 
 export default router;
