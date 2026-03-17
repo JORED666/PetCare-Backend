@@ -29,19 +29,25 @@ export class UserRepository implements IUserRepository {
   }
 
   async create(user: Omit<User, 'id'>): Promise<User> {
-    const [nuevo] = await db.insert(users).values({
-      id_rol: 3,
-      nombre: user.nombre,
-      apellido: user.apellido,
-      email: user.email,
-      password: user.password,
-      telefono: user.telefono,
-      activo: true,
-      avatar_url: user.avatar_url ?? null,
-    }).returning();
+  const rolMap: Record<string, number> = {
+    'ADMIN':       1,
+    'VETERINARIO': 2,
+    'USER':        3,
+  };
 
-    return UserMapper.toUserDomain(nuevo);
-  }
+  const [nuevo] = await db.insert(users).values({
+    id_rol:     rolMap[user.rol] ?? 3,
+    nombre:     user.nombre,
+    apellido:   user.apellido,
+    email:      user.email,
+    password:   user.password,
+    telefono:   user.telefono,
+    activo:     true,
+    avatar_url: user.avatar_url ?? null,
+  }).returning();
+
+  return UserMapper.toUserDomain(nuevo);
+}
 
   async createVeterinario(vet: Omit<Veterinario, 'id'>): Promise<Veterinario> {
     const [nuevo] = await db.insert(veterinarios).values({
