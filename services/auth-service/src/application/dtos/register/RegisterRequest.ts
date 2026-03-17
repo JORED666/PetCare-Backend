@@ -4,4 +4,5 @@ export interface RegisterRequest {
   email: string;
   password: string;
   telefono: string;
+  rol?: string; 
 }
