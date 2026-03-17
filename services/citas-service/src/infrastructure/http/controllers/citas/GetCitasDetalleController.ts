@@ -4,7 +4,7 @@ import { queryClient } from '../../../db/database';
 export class GetCitasDetalleController {
   async handle(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await queryClient`
+      const result = await queryClient.unsafe(`
         SELECT 
           c.id_cita,
           c.fecha AS fecha_cita,
@@ -25,7 +25,7 @@ export class GetCitasDetalleController {
         JOIN servicios s ON s.id_servicio = c.id_servicio
         LEFT JOIN veterinarios v ON v.id_veterinario = c.id_veterinario
         ORDER BY c.fecha DESC
-      `;
+      `);
       res.json({ success: true, data: result });
     } catch (error) {
       next(error);
