@@ -20,6 +20,7 @@ app.use(cors({
   origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
   credentials: true
 }));
+app.use(express.json());
 app.use(requestLogger);
 
 app.get('/health', (req, res) => {
@@ -36,14 +37,14 @@ app.use('/api/notifications', notificationsRoutes);
 app.use('/api/veterinarios', veterinariosRoutes);
 
 app.listen(PORT, () => {
-  console.log(`🚀 Gateway running on port ${PORT}`);
-  console.log(`📍 Health check: http://localhost:${PORT}/health`);
-  console.log(`🔐 Auth:      http://localhost:${PORT}/api/auth`);
-  console.log(`👥 Clients:   http://localhost:${PORT}/api/clients`);
-  console.log(`🐾 Pets:      http://localhost:${PORT}/api/pets`);
-  console.log(`📅 Citas:     http://localhost:${PORT}/api/citas`);
-  console.log(`📆 Agenda:    http://localhost:${PORT}/api/agenda`);
-  console.log(`📋 Historial: http://localhost:${PORT}/api/historial`);
+  console.log(`��� Gateway running on port ${PORT}`);
+  console.log(`��� Health check: http://localhost:${PORT}/health`);
+  console.log(`��� Auth:      http://localhost:${PORT}/api/auth`);
+  console.log(`��� Clients:   http://localhost:${PORT}/api/clients`);
+  console.log(`��� Pets:      http://localhost:${PORT}/api/pets`);
+  console.log(`��� Citas:     http://localhost:${PORT}/api/citas`);
+  console.log(`��� Agenda:    http://localhost:${PORT}/api/agenda`);
+  console.log(`��� Historial: http://localhost:${PORT}/api/historial`);
 });
 
 export default app;
