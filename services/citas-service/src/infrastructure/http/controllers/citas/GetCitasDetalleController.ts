@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { queryClient } from '../../../db/database';
+import { db } from '../../../db/database';
+import { sql } from 'drizzle-orm';
 
 export class GetCitasDetalleController {
   async handle(req: Request, res: Response, next: NextFunction) {
     try {
-      const result = await queryClient.unsafe(`
+      const result = await db.execute(sql`
         SELECT 
           c.id_cita,
           c.fecha AS fecha_cita,
