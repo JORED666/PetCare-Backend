@@ -1,3 +1,4 @@
+import { ListarAdminsController } from './../controllers/personal/ListarAdminsController';
 import { Router } from 'express';
 import passport from 'passport';
 import { LoginController } from '../controllers/auth/LoginController';
@@ -11,6 +12,7 @@ import { ResetPasswordController } from '../controllers/auth/ResetPasswordContro
 import { GoogleAuthController } from '../controllers/auth/GoogleAuthController';
 import { authMiddleware } from '../middlewares/auth.middleware';
 
+
 const router = Router();
 
 const loginController = new LoginController();
@@ -22,6 +24,7 @@ const cambiarPasswordController = new CambiarPasswordController();
 const forgotPasswordController = new ForgotPasswordController();
 const resetPasswordController = new ResetPasswordController();
 const googleAuthController = new GoogleAuthController();
+const listarAdminsController = new ListarAdminsController();
 
 router.post('/auth/login', loginController.handle.bind(loginController));
 router.post('/auth/register', uploadUserMiddleware, registerController.handle.bind(registerController));
@@ -42,5 +45,5 @@ router.post('/auth/reset-password', resetPasswordController.handle.bind(resetPas
 router.post('/veterinarios/registrar', authMiddleware, uploadVetMiddleware, registerVeterinarioController.handle.bind(registerVeterinarioController));
 router.get('/veterinarios/listar', authMiddleware, listarVeterinariosController.handle.bind(listarVeterinariosController));
 router.put('/veterinarios/cambiar-password', authMiddleware, cambiarPasswordController.handle.bind(cambiarPasswordController));
-
+router.get('/users/admins', authMiddleware, listarAdminsController.handle.bind(listarAdminsController));
 export default router;
