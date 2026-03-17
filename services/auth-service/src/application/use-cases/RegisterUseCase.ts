@@ -13,31 +13,32 @@ export class RegisterUseCase {
     if (existe) throw new Error('El email ya está registrado');
 
     const password = await hashPassword(dto.password);
+
     const nuevoUser = await this.userRepository.create({
-      nombre: dto.nombre,
-      apellido: dto.apellido,
-      email: dto.email,
+      nombre:     dto.nombre,
+      apellido:   dto.apellido,
+      email:      dto.email,
       password,
-      telefono: dto.telefono,
-      rol: Role.USER,
+      telefono:   dto.telefono,
+      rol:        (dto.rol as Role) ?? Role.USER,
       avatar_url: avatarUrl,
     });
 
     const token = generateToken({
-      id: nuevoUser.id,
+      id:    nuevoUser.id,
       email: nuevoUser.email,
-      rol: nuevoUser.rol,
+      rol:   nuevoUser.rol,
     });
 
     return {
       token,
       user: {
-        id: nuevoUser.id,
-        nombre: nuevoUser.nombre,
-        apellido: nuevoUser.apellido,
-        email: nuevoUser.email,
-        telefono: nuevoUser.telefono,
-        rol: nuevoUser.rol,
+        id:         nuevoUser.id,
+        nombre:     nuevoUser.nombre,
+        apellido:   nuevoUser.apellido,
+        email:      nuevoUser.email,
+        telefono:   nuevoUser.telefono,
+        rol:        nuevoUser.rol,
         avatar_url: nuevoUser.avatar_url,
       },
     };
