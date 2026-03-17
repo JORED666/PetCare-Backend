@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(requestLogger);
 
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', service: 'gateway', timestamp: new Date().toISOString() });
+  res.json({ status: 'ok', service: 'gateway funcionando', timestamp: new Date().toISOString() });
 });
 
 app.use('/api/auth', authRoutes);
