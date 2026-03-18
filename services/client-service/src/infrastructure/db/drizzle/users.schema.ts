@@ -1,12 +1,13 @@
-import { pgTable, serial, varchar, boolean, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, serial, integer, varchar, boolean, timestamp } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
-  id_user: serial('id_user').primaryKey(),
-  nombre: varchar('nombre', { length: 100 }).notNull(),
+  id_user:  serial('id_user').primaryKey(),
+  id_rol:   integer('id_rol').notNull().default(3),
+  nombre:   varchar('nombre',   { length: 100 }).notNull(),
   apellido: varchar('apellido', { length: 100 }).notNull(),
-  email: varchar('email', { length: 255 }).notNull().unique(),
+  email:    varchar('email',    { length: 255 }).notNull().unique(),
   telefono: varchar('telefono', { length: 20 }),
-  activo: boolean('activo').default(true),
+  activo:   boolean('activo').default(true),
   created_at: timestamp('created_at').defaultNow(),
   updated_at: timestamp('updated_at').defaultNow(),
 });
