@@ -5,6 +5,7 @@ import { GetPetsByUserIdController } from '../controllers/pets/GetPetsByUserIdCo
 import { CreatePetController } from '../controllers/pets/CreatePetController';
 import { UpdatePetController } from '../controllers/pets/UpdatePetController';
 import { DeletePetController } from '../controllers/pets/DeletePetController';
+import { GetPacientesDetalleController } from '../controllers/pets/GetPacientesDetalleController';
 
 const router = Router();
 
@@ -14,6 +15,7 @@ const getPetsByUserIdController = new GetPetsByUserIdController();
 const createPetController = new CreatePetController();
 const updatePetController = new UpdatePetController();
 const deletePetController = new DeletePetController();
+const getPacientesDetalleController = new GetPacientesDetalleController();
 
 router.get('/pets', getAllPetsController.handle.bind(getAllPetsController));
 router.get('/pets/:id', getPetByIdController.handle.bind(getPetByIdController));
@@ -21,5 +23,6 @@ router.get('/pets/user/:userId', getPetsByUserIdController.handle.bind(getPetsBy
 router.post('/pets', createPetController.handle.bind(createPetController));
 router.put('/pets/:id', updatePetController.handle.bind(updatePetController));
 router.delete('/pets/:id', deletePetController.handle.bind(deletePetController));
+router.get('/pets/detalle', getPacientesDetalleController.handle.bind(getPacientesDetalleController));
 
 export default router;
