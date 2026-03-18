@@ -76,4 +76,16 @@ router.get('/users/admins', async (req: Request, res: Response) => {
   }
 });
 
+router.get('/google', (req: Request, res: Response) => {
+  res.redirect(`${AUTH_SERVICE_URL}/api/auth/google`);
+});
+
+router.get('/google/callback', (req: Request, res: Response) => {
+  res.redirect(`${AUTH_SERVICE_URL}/api/auth/google/callback?${new URLSearchParams(req.query as Record<string, string>).toString()}`);
+});
+
+router.get('/google/failed', (req: Request, res: Response) => {
+  res.redirect('http://localhost:3000/login?error=google_failed');
+});
+
 export default router;

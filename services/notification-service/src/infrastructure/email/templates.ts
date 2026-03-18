@@ -96,3 +96,28 @@ export function getRecordatorioCitaTemplate(data: {
     `
   };
 }
+// Agrega al final de templates.ts
+export function getRecordatorio1hTemplate(data: {
+  nombre: string;
+  fecha: string;
+  hora: string;
+  servicio: string;
+}): { subject: string; html: string } {
+  return {
+    subject: '⏰ Tu cita es en 1 hora - PetCare',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #E91E63;">🐾 PetCare - ¡Tu cita es en 1 hora!</h2>
+        <p>Hola <strong>${data.nombre}</strong>,</p>
+        <p>Tu cita comienza <strong>en 1 hora</strong>. ¡Ya casi!</p>
+        <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 16px 0;">
+          <p><strong>📅 Fecha:</strong> ${data.fecha}</p>
+          <p><strong>🕐 Hora:</strong> ${data.hora}</p>
+          <p><strong>🏥 Servicio:</strong> ${data.servicio}</p>
+        </div>
+        <hr style="border: 1px solid #eee; margin: 24px 0;">
+        <p style="color: #999; font-size: 12px;">PetCare - Cuidando a tus mascotas</p>
+      </div>
+    `
+  };
+}
