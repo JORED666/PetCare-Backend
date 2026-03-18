@@ -6,6 +6,14 @@ export class CreateCitaUseCase {
   constructor(private readonly citaRepository: ICitaRepository) {}
 
   async execute(dto: CreateCitaRequest): Promise<CreateCitaResponse> {
+    const citaExistente = await this.citaRepository.findByMascotaAndFecha(
+      dto.id_mascota,
+      new Date(dto.fecha)
+    );
+    if (citaExistente) {
+      throw new Error('Ya existe una cita para esta mascota en esa fecha y hora');
+    }
+
     const cita = await this.citaRepository.create({
       id_user:               dto.id_user,
       id_mascota:            dto.id_mascota,

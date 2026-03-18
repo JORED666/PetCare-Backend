@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { db } from '../database';
 import { citas } from '../drizzle/citas.schema';
 import { ICitaRepository } from '../../../domain/repositories/ICitaRepository';
@@ -27,16 +27,27 @@ export class CitaRepository implements ICitaRepository {
     return result.map(CitaMapper.toDomain);
   }
 
+  async findByMascotaAndFecha(id_mascota: number, fecha: Date): Promise<Cita | null> {
+    const [row] = await db.select().from(citas)
+      .where(
+        and(
+          eq(citas.id_mascota, id_mascota),
+          eq(citas.fecha, fecha)
+        )
+      ).limit(1);
+    return row ? CitaMapper.toDomain(row) : null;
+  }
+
   async create(cita: Omit<Cita, 'id' | 'created_at' | 'updated_at'>): Promise<Cita> {
     const [nuevo] = await db.insert(citas).values({
-      id_user: cita.id_user,
-      id_mascota: cita.id_mascota,
-      id_servicio: cita.id_servicio,
-      id_veterinario: cita.id_veterinario,
-      id_agenda: cita.id_agenda,
-      fecha: cita.fecha,
-      estado: cita.estado,
-      observaciones_cliente: cita.observaciones_cliente
+      id_user:               cita.id_user,
+      id_mascota:            cita.id_mascota,
+      id_servicio:           cita.id_servicio,
+      id_veterinario:        cita.id_veterinario,
+      id_agenda:             cita.id_agenda,
+      fecha:                 cita.fecha,
+      estado:                cita.estado,
+      observaciones_cliente: cita.observaciones_cliente,
     }).returning();
     return CitaMapper.toDomain(nuevo);
   }
