@@ -1,5 +1,7 @@
 import { Router, Request, Response } from 'express';
 import axios from 'axios';
+import FormData from 'form-data';
+import multer from 'multer';
 
 const router = Router();
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || 'http://localhost:3001';
@@ -16,10 +18,25 @@ router.post('/login', async (req: Request, res: Response) => {
   }
 });
 
-router.post('/register', async (req: Request, res: Response) => {
+const upload = multer({ storage: multer.memoryStorage() });
+
+router.post('/register', upload.single('avatar'), async (req: Request, res: Response) => {
   try {
-    const response = await axios.post(`${AUTH_SERVICE_URL}/api/auth/register`, req.body, {
-      headers: { 'Content-Type': 'application/json' },
+    const form = new FormData();
+
+    Object.entries(req.body).forEach(([key, value]) => {
+      form.append(key, value as string);
+    });
+
+    if (req.file) {
+      form.append('avatar', req.file.buffer, {
+        filename:    req.file.originalname,
+        contentType: req.file.mimetype,
+      });
+    }
+
+    const response = await axios.post(`${AUTH_SERVICE_URL}/api/auth/register`, form, {
+      headers: { ...form.getHeaders() },
     });
     res.status(response.status).json(response.data);
   } catch (error: unknown) {
