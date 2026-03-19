@@ -20,7 +20,7 @@ router.post('/login', async (req: Request, res: Response) => {
 
 const upload = multer({ storage: multer.memoryStorage() });
 
-router.post('/register', upload.single('avatar'), async (req: Request, res: Response) => {
+router.post('/register', upload.any(), async (req: Request, res: Response) => {
   try {
     const form = new FormData();
 
@@ -28,10 +28,12 @@ router.post('/register', upload.single('avatar'), async (req: Request, res: Resp
       form.append(key, value as string);
     });
 
-    if (req.file) {
-      form.append('avatar', req.file.buffer, {
-        filename:    req.file.originalname,
-        contentType: req.file.mimetype,
+    const files = req.files as Express.Multer.File[];
+    if (files && files.length > 0) {
+      const file = files[0];
+      form.append('avatar', file.buffer, {
+        filename:    file.originalname,
+        contentType: file.mimetype,
       });
     }
 
