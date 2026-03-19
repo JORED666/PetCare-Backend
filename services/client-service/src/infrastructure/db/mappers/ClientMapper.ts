@@ -11,13 +11,14 @@ const rolMap: Record<number, Role> = {
 export class ClientMapper {
   static toDomain(row: UserRecord): User {
     return {
-      id:       row.id_user,
-      nombre:   row.nombre,
-      apellido: row.apellido,
-      email:    row.email,
-      telefono: row.telefono,
-      activo:   row.activo ?? true,
-      rol:      rolMap[row.id_rol] ?? Role.USER,
+      id:         row.id_user,
+      nombre:     row.nombre,
+      apellido:   row.apellido,
+      email:      row.email,
+      telefono:   row.telefono,
+      activo:     row.activo ?? true,
+      rol:        rolMap[row.id_rol] ?? Role.USER,
+      avatar_url: row.avatar_url ?? null,
     };
   }
 }
