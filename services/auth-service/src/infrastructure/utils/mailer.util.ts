@@ -2,11 +2,12 @@ import nodemailer, { TransportOptions } from 'nodemailer';
 
 function getTransporter() {
   return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: '74.125.133.108',
     port: 587,
     secure: false,
     tls: {
-      rejectUnauthorized: false
+      rejectUnauthorized: false,
+      servername: 'smtp.gmail.com'
     },
     auth: {
       user: process.env.GMAIL_USER,
