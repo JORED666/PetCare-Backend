@@ -12,7 +12,8 @@ export class UpdateClientUseCase {
       nombre: updated.nombre,
       apellido: updated.apellido,
       email: updated.email,
-      telefono: updated.telefono
+      telefono: updated.telefono,
+      avatar_url: updated.avatar_url ?? null,
     };
   }
 }

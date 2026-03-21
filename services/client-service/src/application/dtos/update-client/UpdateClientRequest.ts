@@ -3,4 +3,5 @@ export interface UpdateClientRequest {
   apellido?: string;
   email?: string;
   telefono?: string;
+  avatar_url?: string;
 }

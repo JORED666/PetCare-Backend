@@ -1,16 +1,20 @@
-import { Resend } from 'resend';
+import nodemailer from 'nodemailer';
 
-function getResend() {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) throw new Error('RESEND_API_KEY no está definida');
-  return new Resend(key);
+function getTransporter() {
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_APP_PASSWORD,
+    },
+  });
 }
 
 export async function sendResetPasswordEmail(to: string, token: string): Promise<void> {
-  const resend = getResend();
+  const transporter = getTransporter();
   const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
-  await resend.emails.send({
-    from: 'PetCare <onboarding@resend.dev>',
+  await transporter.sendMail({
+    from: `PetCare <${process.env.GMAIL_USER}>`,
     to,
     subject: 'Restablecer contraseña - PetCare',
     html: `
@@ -33,9 +37,9 @@ export async function sendResetPasswordEmail(to: string, token: string): Promise
 }
 
 export async function sendWelcomeEmail(to: string, nombre: string): Promise<void> {
-  const resend = getResend();
-  await resend.emails.send({
-    from: 'PetCare <onboarding@resend.dev>',
+  const transporter = getTransporter();
+  await transporter.sendMail({
+    from: `PetCare <${process.env.GMAIL_USER}>`,
     to,
     subject: 'Bienvenido a PetCare 🐾',
     html: `

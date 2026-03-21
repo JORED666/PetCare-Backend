@@ -4,4 +4,5 @@ export interface UpdateClientResponse {
   apellido: string;
   email: string;
   telefono?: string | null;
+  avatar_url?: string | null;
 }

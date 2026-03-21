@@ -19,13 +19,13 @@ export class ClientRepository implements IClientRepository {
 
   async update(id: number, data: Partial<User>): Promise<User> {
     const [updated] = await db.update(users).set({
-      ...(data.nombre && { nombre: data.nombre }),
-      ...(data.apellido && { apellido: data.apellido }),
-      ...(data.email && { email: data.email }),
-      ...(data.telefono !== undefined && { telefono: data.telefono }),
+      ...(data.nombre    && { nombre:    data.nombre }),
+      ...(data.apellido  && { apellido:  data.apellido }),
+      ...(data.email     && { email:     data.email }),
+      ...(data.telefono  !== undefined && { telefono: data.telefono }),
+      ...(data.avatar_url !== undefined && { avatar_url: data.avatar_url }),
       updated_at: new Date()
     }).where(eq(users.id_user, id)).returning();
-
     if (!updated) throw new Error('Cliente no encontrado');
     return ClientMapper.toDomain(updated);
   }
