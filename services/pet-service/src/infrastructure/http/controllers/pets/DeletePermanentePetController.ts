@@ -8,7 +8,12 @@ export class DeletePermanentePetController {
     try {
       await db.delete(mascotas).where(eq(mascotas.id_mascota, parseInt(req.params.id)));
       res.json({ success: true, message: 'Mascota eliminada permanentemente' });
-    } catch (error) {
+    } catch (error: unknown) {
+      const err = error as { code?: string };
+      if (err.code === '23503') {
+        res.status(400).json({ success: false, error: 'No se puede eliminar la mascota porque tiene citas asociadas. Primero elimina las citas.' });
+        return;
+      }
       next(error);
     }
   }
