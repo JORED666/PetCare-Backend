@@ -24,6 +24,17 @@ export class UserRepository implements IUserRepository {
     return null;
   }
 
+  async findByIdAndRol(id: number, rol: string): Promise<User | Veterinario | null> {
+    if (rol === 'VETERINARIO') {
+      const [vet] = await db.select().from(veterinarios).where(eq(veterinarios.id_veterinario, id)).limit(1);
+      if (vet) return UserMapper.toVeterinarioDomain(vet);
+      return null;
+    }
+    const [user] = await db.select().from(users).where(eq(users.id_user, id)).limit(1);
+    if (user) return UserMapper.toUserDomain(user);
+    return null;
+  }
+
   async create(user: Omit<User, 'id'>): Promise<User> {
     const rolMap: Record<string, number> = {
       'ADMIN':       1,
@@ -62,6 +73,14 @@ export class UserRepository implements IUserRepository {
   async updatePassword(id: number, password: string): Promise<void> {
     await db.update(users).set({ password }).where(eq(users.id_user, id));
     await db.update(veterinarios).set({ password }).where(eq(veterinarios.id_veterinario, id));
+  }
+
+  async updatePasswordByRol(id: number, rol: string, password: string): Promise<void> {
+    if (rol === 'VETERINARIO') {
+      await db.update(veterinarios).set({ password }).where(eq(veterinarios.id_veterinario, id));
+    } else {
+      await db.update(users).set({ password }).where(eq(users.id_user, id));
+    }
   }
 
   async updateProfile(id: number, rol: string, data: { nombre?: string; apellido?: string; email?: string; telefono?: string; cedula_profesional?: string; avatar_url?: string }): Promise<void> {
