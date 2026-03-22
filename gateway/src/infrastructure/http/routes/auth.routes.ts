@@ -23,11 +23,9 @@ const upload = multer({ storage: multer.memoryStorage() });
 router.post('/register', upload.any(), async (req: Request, res: Response) => {
   try {
     const form = new FormData();
-
     Object.entries(req.body).forEach(([key, value]) => {
       form.append(key, value as string);
     });
-
     const files = req.files as Express.Multer.File[];
     if (files && files.length > 0) {
       const file = files[0];
@@ -36,7 +34,6 @@ router.post('/register', upload.any(), async (req: Request, res: Response) => {
         contentType: file.mimetype,
       });
     }
-
     const response = await axios.post(`${AUTH_SERVICE_URL}/api/auth/register`, form, {
       headers: { ...form.getHeaders() },
     });
@@ -56,6 +53,18 @@ router.get('/me', async (req: Request, res: Response) => {
   } catch (error: unknown) {
     const err = error as { response?: { status: number; data: unknown } };
     res.status(err.response?.status ?? 500).json(err.response?.data ?? { success: false, error: 'Error en me' });
+  }
+});
+
+router.put('/profile', async (req: Request, res: Response) => {
+  try {
+    const response = await axios.put(`${AUTH_SERVICE_URL}/api/auth/profile`, req.body, {
+      headers: { Authorization: req.headers.authorization || '', 'Content-Type': 'application/json' },
+    });
+    res.status(response.status).json(response.data);
+  } catch (error: unknown) {
+    const err = error as { response?: { status: number; data: unknown } };
+    res.status(err.response?.status ?? 500).json(err.response?.data ?? { success: false, error: 'Error al actualizar perfil' });
   }
 });
 

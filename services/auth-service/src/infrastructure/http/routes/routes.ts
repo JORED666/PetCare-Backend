@@ -10,25 +10,26 @@ import { CambiarPasswordController } from '../controllers/personal/CambiarPasswo
 import { ForgotPasswordController } from '../controllers/auth/ForgotPasswordController';
 import { ResetPasswordController } from '../controllers/auth/ResetPasswordController';
 import { GoogleAuthController } from '../controllers/auth/GoogleAuthController';
+import { UpdateProfileController } from '../controllers/auth/UpdateProfileController';
 import { authMiddleware } from '../middlewares/auth.middleware';
 
-
 const router = Router();
-
-const loginController = new LoginController();
-const registerController = new RegisterController();
-const meController = new MeController();
+const loginController              = new LoginController();
+const registerController           = new RegisterController();
+const meController                 = new MeController();
 const registerVeterinarioController = new RegisterVeterinarioController();
 const listarVeterinariosController = new ListarVeterinariosController();
-const cambiarPasswordController = new CambiarPasswordController();
-const forgotPasswordController = new ForgotPasswordController();
-const resetPasswordController = new ResetPasswordController();
-const googleAuthController = new GoogleAuthController();
-const listarAdminsController = new ListarAdminsController();
+const cambiarPasswordController    = new CambiarPasswordController();
+const forgotPasswordController     = new ForgotPasswordController();
+const resetPasswordController      = new ResetPasswordController();
+const googleAuthController         = new GoogleAuthController();
+const listarAdminsController       = new ListarAdminsController();
+const updateProfileController      = new UpdateProfileController();
 
 router.post('/auth/login', loginController.handle.bind(loginController));
 router.post('/auth/register', uploadUserMiddleware, registerController.handle.bind(registerController));
 router.get('/auth/me', authMiddleware, meController.handle.bind(meController));
+router.put('/auth/profile', authMiddleware, updateProfileController.handle.bind(updateProfileController));
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/auth/google/callback',
@@ -46,4 +47,5 @@ router.post('/veterinarios/registrar', authMiddleware, uploadVetMiddleware, regi
 router.get('/veterinarios/listar', authMiddleware, listarVeterinariosController.handle.bind(listarVeterinariosController));
 router.put('/veterinarios/cambiar-password', authMiddleware, cambiarPasswordController.handle.bind(cambiarPasswordController));
 router.get('/users/admins', authMiddleware, listarAdminsController.handle.bind(listarAdminsController));
+
 export default router;

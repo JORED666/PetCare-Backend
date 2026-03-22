@@ -11,64 +11,76 @@ export class UserRepository implements IUserRepository {
   async findByEmail(email: string): Promise<User | Veterinario | null> {
     const [user] = await db.select().from(users).where(eq(users.email, email)).limit(1);
     if (user) return UserMapper.toUserDomain(user);
-
     const [vet] = await db.select().from(veterinarios).where(eq(veterinarios.email, email)).limit(1);
     if (vet) return UserMapper.toVeterinarioDomain(vet);
-
     return null;
   }
 
   async findById(id: number): Promise<User | Veterinario | null> {
     const [user] = await db.select().from(users).where(eq(users.id_user, id)).limit(1);
     if (user) return UserMapper.toUserDomain(user);
-
     const [vet] = await db.select().from(veterinarios).where(eq(veterinarios.id_veterinario, id)).limit(1);
     if (vet) return UserMapper.toVeterinarioDomain(vet);
-
     return null;
   }
 
   async create(user: Omit<User, 'id'>): Promise<User> {
-  const rolMap: Record<string, number> = {
-    'ADMIN':       1,
-    'VETERINARIO': 2,
-    'USER':        3,
-  };
-
-  const [nuevo] = await db.insert(users).values({
-    id_rol:     rolMap[user.rol] ?? 3,
-    nombre:     user.nombre,
-    apellido:   user.apellido,
-    email:      user.email,
-    password:   user.password,
-    telefono:   user.telefono,
-    activo:     true,
-    avatar_url: user.avatar_url ?? null,
-  }).returning();
-
-  return UserMapper.toUserDomain(nuevo);
-}
+    const rolMap: Record<string, number> = {
+      'ADMIN':       1,
+      'VETERINARIO': 2,
+      'USER':        3,
+    };
+    const [nuevo] = await db.insert(users).values({
+      id_rol:     rolMap[user.rol] ?? 3,
+      nombre:     user.nombre,
+      apellido:   user.apellido,
+      email:      user.email,
+      password:   user.password,
+      telefono:   user.telefono,
+      activo:     true,
+      avatar_url: user.avatar_url ?? null,
+    }).returning();
+    return UserMapper.toUserDomain(nuevo);
+  }
 
   async createVeterinario(vet: Omit<Veterinario, 'id'>): Promise<Veterinario> {
     const [nuevo] = await db.insert(veterinarios).values({
-      id_rol: 2,
-      nombre: vet.nombre,
-      apellido: vet.apellido,
-      email: vet.email,
-      password: vet.password,
-      telefono: vet.telefono,
+      id_rol:             2,
+      nombre:             vet.nombre,
+      apellido:           vet.apellido,
+      email:              vet.email,
+      password:           vet.password,
+      telefono:           vet.telefono,
       cedula_profesional: vet.cedula_profesional,
-      especialidad: vet.especialidad,
-      activo: true,
-      avatar_url: vet.avatar_url ?? null,
+      especialidad:       vet.especialidad,
+      activo:             true,
+      avatar_url:         vet.avatar_url ?? null,
     }).returning();
-
     return UserMapper.toVeterinarioDomain(nuevo);
   }
 
   async updatePassword(id: number, password: string): Promise<void> {
     await db.update(users).set({ password }).where(eq(users.id_user, id));
     await db.update(veterinarios).set({ password }).where(eq(veterinarios.id_veterinario, id));
+  }
+
+  async updateProfile(id: number, rol: string, data: { nombre?: string; apellido?: string; email?: string; telefono?: string; cedula_profesional?: string }): Promise<void> {
+    if (rol === 'VETERINARIO') {
+      await db.update(veterinarios).set({
+        ...(data.nombre && { nombre: data.nombre }),
+        ...(data.apellido && { apellido: data.apellido }),
+        ...(data.email && { email: data.email }),
+        ...(data.telefono !== undefined && { telefono: data.telefono }),
+        ...(data.cedula_profesional !== undefined && { cedula_profesional: data.cedula_profesional }),
+      }).where(eq(veterinarios.id_veterinario, id));
+    } else {
+      await db.update(users).set({
+        ...(data.nombre && { nombre: data.nombre }),
+        ...(data.apellido && { apellido: data.apellido }),
+        ...(data.email && { email: data.email }),
+        ...(data.telefono !== undefined && { telefono: data.telefono }),
+      }).where(eq(users.id_user, id));
+    }
   }
 
   async delete(id: number): Promise<void> {
