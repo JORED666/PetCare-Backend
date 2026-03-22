@@ -11,5 +11,6 @@ export interface LoginResponse {
     telefono?: string;
     rol: Role;
     avatar_url: string | null;
+    cedula_profesional?: string | null;
   };
 }
