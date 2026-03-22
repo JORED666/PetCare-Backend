@@ -64,7 +64,7 @@ export class UserRepository implements IUserRepository {
     await db.update(veterinarios).set({ password }).where(eq(veterinarios.id_veterinario, id));
   }
 
-  async updateProfile(id: number, rol: string, data: { nombre?: string; apellido?: string; email?: string; telefono?: string; cedula_profesional?: string }): Promise<void> {
+  async updateProfile(id: number, rol: string, data: { nombre?: string; apellido?: string; email?: string; telefono?: string; cedula_profesional?: string; avatar_url?: string }): Promise<void> {
     if (rol === 'VETERINARIO') {
       await db.update(veterinarios).set({
         ...(data.nombre && { nombre: data.nombre }),
@@ -72,6 +72,7 @@ export class UserRepository implements IUserRepository {
         ...(data.email && { email: data.email }),
         ...(data.telefono !== undefined && { telefono: data.telefono }),
         ...(data.cedula_profesional !== undefined && { cedula_profesional: data.cedula_profesional }),
+        ...(data.avatar_url !== undefined && { avatar_url: data.avatar_url }),
       }).where(eq(veterinarios.id_veterinario, id));
     } else {
       await db.update(users).set({
@@ -79,6 +80,7 @@ export class UserRepository implements IUserRepository {
         ...(data.apellido && { apellido: data.apellido }),
         ...(data.email && { email: data.email }),
         ...(data.telefono !== undefined && { telefono: data.telefono }),
+        ...(data.avatar_url !== undefined && { avatar_url: data.avatar_url }),
       }).where(eq(users.id_user, id));
     }
   }

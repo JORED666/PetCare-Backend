@@ -9,6 +9,7 @@ export class UpdateProfileUseCase {
     email?: string;
     telefono?: string;
     cedula_profesional?: string;
+    avatar_url?: string;
   }): Promise<void> {
     await this.userRepository.updateProfile(id, rol, data);
   }
