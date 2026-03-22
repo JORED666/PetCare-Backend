@@ -83,4 +83,28 @@ router.get('/detalle', authMiddleware, async (req: Request, res: Response) => {
   }
 });
 
+router.patch('/:id/reactivar', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const response = await axios.patch(`${PET_SERVICE_URL}/api/pets/${req.params.id}/reactivar`, {}, {
+      headers: { Authorization: req.headers.authorization || '' },
+    });
+    res.status(response.status).json(response.data);
+  } catch (error: unknown) {
+    const err = error as { response?: { status: number; data: unknown } };
+    res.status(err.response?.status ?? 500).json(err.response?.data ?? { success: false, error: 'Error' });
+  }
+});
+
+router.delete('/:id/permanente', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const response = await axios.delete(`${PET_SERVICE_URL}/api/pets/${req.params.id}/permanente`, {
+      headers: { Authorization: req.headers.authorization || '' },
+    });
+    res.status(response.status).json(response.data);
+  } catch (error: unknown) {
+    const err = error as { response?: { status: number; data: unknown } };
+    res.status(err.response?.status ?? 500).json(err.response?.data ?? { success: false, error: 'Error' });
+  }
+});
+
 export default router;

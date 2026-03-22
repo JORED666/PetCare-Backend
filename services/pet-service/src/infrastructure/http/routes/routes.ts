@@ -6,6 +6,11 @@ import { CreatePetController } from '../controllers/pets/CreatePetController';
 import { UpdatePetController } from '../controllers/pets/UpdatePetController';
 import { DeletePetController } from '../controllers/pets/DeletePetController';
 import { GetPacientesDetalleController } from '../controllers/pets/GetPacientesDetalleController';
+import { ReactivarPetController } from '../controllers/pets/ReactivarPetController';
+import { DeletePermanentePetController } from '../controllers/pets/DeletePermanentePetController';
+
+const reactivarPetController = new ReactivarPetController();
+const deletePermanentePetController = new DeletePermanentePetController();
 
 const router = Router();
 
@@ -24,5 +29,7 @@ router.get('/pets/:id',              getPetByIdController.handle.bind(getPetById
 router.post('/pets',                 createPetController.handle.bind(createPetController));
 router.put('/pets/:id',              updatePetController.handle.bind(updatePetController));
 router.delete('/pets/:id',           deletePetController.handle.bind(deletePetController));
+router.patch('/pets/:id/reactivar', reactivarPetController.handle.bind(reactivarPetController));
+router.delete('/pets/:id/permanente', deletePermanentePetController.handle.bind(deletePermanentePetController));
 
 export default router;
