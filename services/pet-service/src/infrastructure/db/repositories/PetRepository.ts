@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 import { db } from '../database';
 import { mascotas } from '../drizzle/mascotas.schema';
 import { IPetRepository } from '../../../domain/repositories/IPetRepository';
@@ -18,7 +18,9 @@ export class PetRepository implements IPetRepository {
   }
 
   async findByUserId(userId: number): Promise<Pet[]> {
-    const result = await db.select().from(mascotas).where(eq(mascotas.id_user, userId));
+    const result = await db.select().from(mascotas).where(
+      and(eq(mascotas.id_user, userId), eq(mascotas.activo, true))
+    );
     return result.map(PetMapper.toDomain);
   }
 
