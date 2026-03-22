@@ -1,6 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from '../database';
 import { citas } from '../drizzle/citas.schema';
+import { mascotas } from '../drizzle/mascotas.schema';
 import { ICitaRepository } from '../../../domain/repositories/ICitaRepository';
 import { Cita, EstadoCita } from '../../../domain/entities/Cita';
 import { CitaMapper } from '../mappers/CitaMapper';
@@ -18,8 +19,28 @@ export class CitaRepository implements ICitaRepository {
   }
 
   async findByUserId(userId: number): Promise<Cita[]> {
-    const result = await db.select().from(citas).where(eq(citas.id_user, userId));
-    return result.map(CitaMapper.toDomain);
+    const result = await db
+      .select({
+        id_cita:               citas.id_cita,
+        id_user:               citas.id_user,
+        id_mascota:            citas.id_mascota,
+        id_servicio:           citas.id_servicio,
+        id_veterinario:        citas.id_veterinario,
+        id_agenda:             citas.id_agenda,
+        fecha:                 citas.fecha,
+        estado:                citas.estado,
+        observaciones_cliente: citas.observaciones_cliente,
+        created_at:            citas.created_at,
+        updated_at:            citas.updated_at,
+        nombre_mascota:        mascotas.nombre,
+      })
+      .from(citas)
+      .leftJoin(mascotas, eq(mascotas.id_mascota, citas.id_mascota))
+      .where(eq(citas.id_user, userId));
+    return result.map(row => CitaMapper.toDomain({
+      ...row,
+      nombre_mascota: row.nombre_mascota ?? undefined,
+}));
   }
 
   async findByVeterinarioId(vetId: number): Promise<Cita[]> {
@@ -29,12 +50,8 @@ export class CitaRepository implements ICitaRepository {
 
   async findByMascotaAndFecha(id_mascota: number, fecha: Date): Promise<Cita | null> {
     const [row] = await db.select().from(citas)
-      .where(
-        and(
-          eq(citas.id_mascota, id_mascota),
-          eq(citas.fecha, fecha)
-        )
-      ).limit(1);
+      .where(and(eq(citas.id_mascota, id_mascota), eq(citas.fecha, fecha)))
+      .limit(1);
     return row ? CitaMapper.toDomain(row) : null;
   }
 

@@ -10,6 +10,7 @@ export interface Cita {
   fecha: Date;
   estado: EstadoCita;
   observaciones_cliente?: string | null;
+  nombre_mascota?: string;
   created_at?: Date;
   updated_at?: Date;
 }
