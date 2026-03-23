@@ -28,11 +28,11 @@ export class AgendaRepository implements IAgendaRepository {
   async create(agenda: Omit<Agenda, 'id' | 'creado_en'>): Promise<Agenda> {
     const [nuevo] = await db.insert(agenda_veterinaria).values({
       veterinario_id: agenda.veterinario_id,
-      fecha: agenda.fecha.toISOString().split('T')[0],
-      dia_nombre: agenda.dia_nombre,
-      hora_inicio: agenda.hora_inicio,
-      hora_fin: agenda.hora_fin,
-      estado: agenda.estado
+      fecha:          agenda.fecha.toISOString().split('T')[0],
+      dia_nombre:     agenda.dia_nombre,
+      hora_inicio:    agenda.hora_inicio,
+      hora_fin:       agenda.hora_fin,
+      estado:         agenda.estado,
     }).returning();
     return AgendaMapper.toDomain(nuevo);
   }
@@ -46,5 +46,10 @@ export class AgendaRepository implements IAgendaRepository {
 
   async delete(id: number): Promise<void> {
     await db.delete(agenda_veterinaria).where(eq(agenda_veterinaria.id, id));
+  }
+
+  async deleteByVeterinarioId(vetId: number): Promise<void> {
+    await db.delete(agenda_veterinaria)
+      .where(eq(agenda_veterinaria.veterinario_id, vetId));
   }
 }

@@ -41,6 +41,18 @@ router.put('/:id/status', authMiddleware, async (req: Request, res: Response) =>
   }
 });
 
+router.delete('/veterinario/:vetId', authMiddleware, async (req: Request, res: Response) => {
+  try {
+    const response = await axios.delete(`${AGENDA_SERVICE_URL}/api/agenda/veterinario/${req.params.vetId}`, {
+      headers: { Authorization: req.headers.authorization || '' },
+    });
+    res.status(response.status).json(response.data);
+  } catch (error: unknown) {
+    const err = error as { response?: { status: number; data: unknown } };
+    res.status(err.response?.status ?? 500).json(err.response?.data ?? { success: false, error: 'Error' });
+  }
+});
+
 router.delete('/:id', authMiddleware, async (req: Request, res: Response) => {
   try {
     const response = await axios.delete(`${AGENDA_SERVICE_URL}/api/agenda/${req.params.id}`, {

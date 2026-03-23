@@ -7,4 +7,5 @@ export interface IAgendaRepository {
   create(agenda: Omit<Agenda, 'id' | 'creado_en'>): Promise<Agenda>;
   updateStatus(id: number, estado: EstadoAgenda): Promise<Agenda>;
   delete(id: number): Promise<void>;
+  deleteByVeterinarioId(vetId: number): Promise<void>;
 }
