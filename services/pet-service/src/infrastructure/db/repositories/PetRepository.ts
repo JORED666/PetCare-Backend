@@ -26,13 +26,14 @@ export class PetRepository implements IPetRepository {
 
   async create(pet: Omit<Pet, 'id'>): Promise<Pet> {
     const [nuevo] = await db.insert(mascotas).values({
-      id_user: pet.id_user,
-      especie: pet.especie,
-      nombre: pet.nombre,
+      id_user:          pet.id_user,
+      especie:          pet.especie,
+      nombre:           pet.nombre,
+      raza:             pet.raza ?? null,
       fecha_nacimiento: pet.fecha_nacimiento?.toISOString().split('T')[0] || null,
-      sexo: pet.sexo,
-      peso: pet.peso?.toString() || null,
-      activo: true
+      sexo:             pet.sexo,
+      peso:             pet.peso?.toString() || null,
+      activo:           true,
     }).returning();
     return PetMapper.toDomain(nuevo);
   }
@@ -41,14 +42,14 @@ export class PetRepository implements IPetRepository {
     const [updated] = await db.update(mascotas).set({
       ...(data.nombre && { nombre: data.nombre }),
       ...(data.especie && { especie: data.especie }),
+      ...(data.raza !== undefined && { raza: data.raza }),
       ...(data.sexo !== undefined && { sexo: data.sexo }),
       ...(data.peso !== undefined && { peso: data.peso?.toString() }),
       ...(data.fecha_nacimiento !== undefined && {
-        fecha_nacimiento: data.fecha_nacimiento?.toISOString().split('T')[0] || null
+        fecha_nacimiento: data.fecha_nacimiento?.toISOString().split('T')[0] || null,
       }),
-      updated_at: new Date()
+      updated_at: new Date(),
     }).where(eq(mascotas.id_mascota, id)).returning();
-
     if (!updated) throw new Error('Mascota no encontrada');
     return PetMapper.toDomain(updated);
   }
