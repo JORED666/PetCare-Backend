@@ -23,7 +23,7 @@ export class GetCitasDetalleController {
         FROM citas c
         JOIN users u ON u.id_user = c.id_user
         JOIN mascotas m ON m.id_mascota = c.id_mascota
-        JOIN servicios s ON s.id_servicio = c.id_servicio
+        LEFT JOIN servicios s ON s.id_servicio = c.id_servicio
         LEFT JOIN veterinarios v ON v.id_veterinario = c.id_veterinario
         ORDER BY c.fecha DESC
       `);
