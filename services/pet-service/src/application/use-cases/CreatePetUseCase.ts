@@ -7,13 +7,14 @@ export class CreatePetUseCase {
 
   async execute(dto: CreatePetRequest): Promise<CreatePetResponse> {
     const pet = await this.petRepository.create({
-      id_user: dto.id_user,
-      especie: dto.especie,
-      nombre: dto.nombre,
+      id_user:          dto.id_user,
+      especie:          dto.especie,
+      nombre:           dto.nombre,
+      raza:             dto.raza || null,
       fecha_nacimiento: dto.fecha_nacimiento ? new Date(dto.fecha_nacimiento) : null,
-      sexo: dto.sexo || null,
-      peso: dto.peso || null,
-      activo: true
+      sexo:             dto.sexo || null,
+      peso:             dto.peso || null,
+      activo:           true,
     });
     return pet;
   }
