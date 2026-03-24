@@ -10,8 +10,8 @@ import { CambiarPasswordController } from '../controllers/personal/CambiarPasswo
 import { ForgotPasswordController } from '../controllers/auth/ForgotPasswordController';
 import { ResetPasswordController } from '../controllers/auth/ResetPasswordController';
 import { GoogleAuthController } from '../controllers/auth/GoogleAuthController';
-import { UpdateProfileController } from '../controllers/auth/UpdateProfileController';
 import { authMiddleware } from '../middlewares/auth.middleware';
+import { UpdateProfileController, uploadMiddleware as uploadProfileMiddleware } from '../controllers/auth/UpdateProfileController';
 
 const router = Router();
 const loginController              = new LoginController();
@@ -29,7 +29,7 @@ const updateProfileController      = new UpdateProfileController();
 router.post('/auth/login', loginController.handle.bind(loginController));
 router.post('/auth/register', uploadUserMiddleware, registerController.handle.bind(registerController));
 router.get('/auth/me', authMiddleware, meController.handle.bind(meController));
-router.put('/auth/profile', authMiddleware, updateProfileController.handle.bind(updateProfileController));
+router.put('/auth/profile', authMiddleware, uploadProfileMiddleware, updateProfileController.handle.bind(updateProfileController));
 
 router.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 router.get('/auth/google/callback',
