@@ -56,11 +56,31 @@ router.get('/me', async (req: Request, res: Response) => {
   }
 });
 
-router.put('/profile', async (req: Request, res: Response) => {
+router.put('/profile', upload.single('foto_perfil'), async (req: Request, res: Response) => {
   try {
-    const response = await axios.put(`${AUTH_SERVICE_URL}/api/auth/profile`, req.body, {
-      headers: { Authorization: req.headers.authorization || '', 'Content-Type': 'application/json' },
+    const form = new FormData();
+
+    Object.entries(req.body).forEach(([key, value]) => {
+      form.append(key, value as string);
     });
+
+    if (req.file) {
+      form.append('foto_perfil', req.file.buffer, {
+        filename:    req.file.originalname,
+        contentType: req.file.mimetype,
+      });
+    }
+
+    const response = await axios.put(
+      `${AUTH_SERVICE_URL}/api/auth/profile`,
+      form,
+      {
+        headers: {
+          ...form.getHeaders(),
+          Authorization: req.headers.authorization || '',
+        },
+      }
+    );
     res.status(response.status).json(response.data);
   } catch (error: unknown) {
     const err = error as { response?: { status: number; data: unknown } };
