@@ -11,8 +11,48 @@ import { CitaMapper } from '../mappers/CitaMapper';
 
 export class CitaRepository implements ICitaRepository {
   async findAll(): Promise<Cita[]> {
-    const result = await db.select().from(citas);
-    return result.map(CitaMapper.toDomain);
+    const result = await db
+      .select({
+        id_cita:               citas.id_cita,
+        id_user:               citas.id_user,
+        id_mascota:            citas.id_mascota,
+        id_servicio:           citas.id_servicio,
+        id_veterinario:        citas.id_veterinario,
+        id_agenda:             citas.id_agenda,
+        fecha:                 citas.fecha,
+        estado:                citas.estado,
+        observaciones_cliente: citas.observaciones_cliente,
+        created_at:            citas.created_at,
+        updated_at:            citas.updated_at,
+        nombre_mascota:        mascotas.nombre,
+        nombre_dueno:          users.nombre,
+        apellido_dueno:        users.apellido,
+        email_dueno:           users.email,
+        telefono_dueno:        users.telefono,
+        nombre_veterinario:    veterinarios.nombre,
+        apellido_veterinario:  veterinarios.apellido,
+        especialidad:          veterinarios.especialidad,
+        nombre_servicio:       servicios.nombre,
+        precio_servicio:       servicios.precio,
+      })
+      .from(citas)
+      .leftJoin(mascotas,     eq(mascotas.id_mascota,         citas.id_mascota))
+      .leftJoin(users,        eq(users.id_user,               citas.id_user))
+      .leftJoin(veterinarios, eq(veterinarios.id_veterinario, citas.id_veterinario))
+      .leftJoin(servicios,    eq(servicios.id_servicio,       citas.id_servicio));
+    return result.map(row => CitaMapper.toDomain({
+      ...row,
+      nombre_mascota:       row.nombre_mascota       ?? undefined,
+      nombre_dueno:         row.nombre_dueno         ?? undefined,
+      apellido_dueno:       row.apellido_dueno       ?? undefined,
+      email_dueno:          row.email_dueno          ?? undefined,
+      telefono_dueno:       row.telefono_dueno       ?? undefined,
+      nombre_veterinario:   row.nombre_veterinario   ?? undefined,
+      apellido_veterinario: row.apellido_veterinario ?? undefined,
+      especialidad:         row.especialidad         ?? undefined,
+      nombre_servicio:      row.nombre_servicio      ?? undefined,
+      precio_servicio:      row.precio_servicio      ?? undefined,
+    }));
   }
 
   async findById(id: number): Promise<Cita | null> {
