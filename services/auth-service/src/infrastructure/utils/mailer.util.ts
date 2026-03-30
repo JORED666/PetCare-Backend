@@ -5,7 +5,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 export async function sendResetPasswordEmail(to: string, token: string): Promise<void> {
   const resetUrl = `${process.env.FRONTEND_URL}/auth/reset-password?token=${token}`
   await resend.emails.send({
-    from: 'PetCare <onboarding@resend.dev>',
+    from: 'PetCare <noreply@mail.ameth.shop>',
     to,
     subject: 'Restablecer contraseña - PetCare',
     html: `
@@ -29,7 +29,7 @@ export async function sendResetPasswordEmail(to: string, token: string): Promise
 
 export async function sendWelcomeEmail(to: string, nombre: string): Promise<void> {
   await resend.emails.send({
-    from: 'PetCare <onboarding@resend.dev>',
+    from: 'PetCare <noreply@mail.ameth.shop>',
     to,
     subject: 'Bienvenido a PetCare 🐾',
     html: `
