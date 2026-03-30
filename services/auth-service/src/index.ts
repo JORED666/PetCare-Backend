@@ -17,6 +17,7 @@ passport.use(new GoogleStrategy({
   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
   callbackURL: process.env.GOOGLE_CALLBACK_URL!
 }, async (accessToken, refreshToken, profile, done) => {
+  console.log('✅ Google callback ejecutado, profile id:', profile.id)
   try {
     const googleProfile = {
       id: profile.id,
@@ -50,6 +51,7 @@ app.listen(PORT, () => {
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
   console.log(`🔐 Auth endpoints: http://localhost:${PORT}/api/auth`);
   console.log(`👥 Personal endpoints: http://localhost:${PORT}/api/personal`);
+  console.log(`🔑 GOOGLE_CALLBACK_URL: ${process.env.GOOGLE_CALLBACK_URL}`)
 });
 
 export default app;
