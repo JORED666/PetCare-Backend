@@ -3,6 +3,6 @@ export interface RegisterRequest {
   apellido: string;
   email: string;
   password: string;
-  telefono: string;
+  telefono?: string;
   rol?: string; 
 }
