@@ -14,7 +14,7 @@ function getTransporter() {
 
 export async function sendResetPasswordEmail(to: string, token: string): Promise<void> {
   const transporter = getTransporter();
-  const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+  const resetUrl = `${process.env.FRONTEND_URL}/auth/reset-password?token=${token}`;
   await transporter.sendMail({
     from: `PetCare <${process.env.GMAIL_USER}>`,
     to,
