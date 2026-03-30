@@ -1,32 +1,20 @@
-import nodemailer, { TransportOptions } from 'nodemailer';
+import { Resend } from 'resend'
 
-function getTransporter() {
-  return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    requireTLS: true,
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASSWORD,
-    },
-  } as TransportOptions);
-}
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function sendResetPasswordEmail(to: string, token: string): Promise<void> {
-  const transporter = getTransporter();
-  const resetUrl = `${process.env.FRONTEND_URL}/auth/reset-password?token=${token}`;
-  await transporter.sendMail({
-    from: `PetCare <${process.env.GMAIL_USER}>`,
+  const resetUrl = `${process.env.FRONTEND_URL}/auth/reset-password?token=${token}`
+  await resend.emails.send({
+    from: 'PetCare <onboarding@resend.dev>',
     to,
     subject: 'Restablecer contraseña - PetCare',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #4A90E2;">🐾 PetCare - Restablecer Contraseña</h2>
+        <h2 style="color: #267A6E;">🐾 PetCare - Restablecer Contraseña</h2>
         <p>Hemos recibido una solicitud para restablecer tu contraseña.</p>
         <p>Haz clic en el siguiente botón para continuar:</p>
-        <a href="${resetUrl}" 
-          style="background-color: #4A90E2; color: white; padding: 12px 24px; 
+        <a href="${resetUrl}"
+          style="background-color: #267A6E; color: white; padding: 12px 24px;
                   text-decoration: none; border-radius: 4px; display: inline-block; margin: 16px 0;">
           Restablecer Contraseña
         </a>
@@ -36,23 +24,22 @@ export async function sendResetPasswordEmail(to: string, token: string): Promise
         <p style="color: #999; font-size: 12px;">PetCare - Cuidando a tus mascotas</p>
       </div>
     `
-  });
+  })
 }
 
 export async function sendWelcomeEmail(to: string, nombre: string): Promise<void> {
-  const transporter = getTransporter();
-  await transporter.sendMail({
-    from: `PetCare <${process.env.GMAIL_USER}>`,
+  await resend.emails.send({
+    from: 'PetCare <onboarding@resend.dev>',
     to,
     subject: 'Bienvenido a PetCare 🐾',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #4A90E2;">🐾 Bienvenido a PetCare, ${nombre}!</h2>
+        <h2 style="color: #267A6E;">🐾 Bienvenido a PetCare, ${nombre}!</h2>
         <p>Tu cuenta ha sido creada exitosamente.</p>
         <p>Ya puedes iniciar sesión y agendar citas para tus mascotas.</p>
         <hr style="border: 1px solid #eee; margin: 24px 0;">
         <p style="color: #999; font-size: 12px;">PetCare - Cuidando a tus mascotas</p>
       </div>
     `
-  });
+  })
 }
