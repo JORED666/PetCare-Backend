@@ -12,6 +12,7 @@ import { ResetPasswordController } from '../controllers/auth/ResetPasswordContro
 import { GoogleAuthController } from '../controllers/auth/GoogleAuthController';
 import { authMiddleware } from '../middlewares/auth.middleware';
 import { UpdateProfileController, uploadMiddleware as uploadProfileMiddleware } from '../controllers/auth/UpdateProfileController';
+import { DeleteUserController } from '../controllers/personal/DeleteUserController';
 
 const router = Router();
 const loginController              = new LoginController();
@@ -25,6 +26,7 @@ const resetPasswordController      = new ResetPasswordController();
 const googleAuthController         = new GoogleAuthController();
 const listarAdminsController       = new ListarAdminsController();
 const updateProfileController      = new UpdateProfileController();
+const deleteUserController         = new DeleteUserController();
 
 router.post('/auth/login', loginController.handle.bind(loginController));
 router.post('/auth/register', uploadUserMiddleware, registerController.handle.bind(registerController));
@@ -47,5 +49,6 @@ router.post('/veterinarios/registrar', authMiddleware, uploadVetMiddleware, regi
 router.get('/veterinarios/listar', authMiddleware, listarVeterinariosController.handle.bind(listarVeterinariosController));
 router.put('/veterinarios/cambiar-password', authMiddleware, cambiarPasswordController.handle.bind(cambiarPasswordController));
 router.get('/users/admins', authMiddleware, listarAdminsController.handle.bind(listarAdminsController));
+router.delete('/users/:id', authMiddleware, deleteUserController.handle.bind(deleteUserController));
 
 export default router;

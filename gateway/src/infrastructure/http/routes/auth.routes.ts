@@ -136,4 +136,20 @@ router.get('/google/failed', (req: Request, res: Response) => {
   res.redirect('http://localhost:3000/login?error=google_failed');
 });
 
+router.delete('/users/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { rol } = req.query;
+
+    const response = await axios.delete(`${AUTH_SERVICE_URL}/api/users/${id}`, {
+      headers: { Authorization: req.headers.authorization || '' },
+      params: { rol },
+    });
+    res.status(response.status).json(response.data);
+  } catch (error: unknown) {
+    const err = error as { response?: { status: number; data: unknown } };
+    res.status(err.response?.status ?? 500).json(err.response?.data ?? { success: false, error: 'Error al eliminar usuario' });
+  }
+});
+
 export default router;
