@@ -25,6 +25,12 @@ export class GoogleAuthUseCase {
       });
     }
 
-    return generateToken({ id: user.id, email: user.email, rol: user.rol });
+    return generateToken({
+      id: user.id,
+      email: user.email,
+      rol: user.rol,
+      nombre: user.nombre,
+      apellido: user.apellido
+    });
   }
 }

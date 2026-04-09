@@ -7,6 +7,8 @@ export interface TokenPayload {
   id: number;
   email: string;
   rol: string;
+  nombre?: string;
+  apellido?: string;
 }
 
 export function generateToken(payload: TokenPayload): string {
