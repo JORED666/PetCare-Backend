@@ -10,6 +10,7 @@ export class CreateCitaUseCase {
       dto.id_mascota,
       new Date(dto.fecha)
     );
+
     if (citaExistente) {
       throw new Error('Ya existe una cita para esta mascota en esa fecha y hora');
     }
@@ -24,6 +25,19 @@ export class CreateCitaUseCase {
       estado:                'PENDIENTE',
       observaciones_cliente: dto.observaciones_cliente || null,
     });
+
+    if (dto.id_agenda) {
+      try {
+        await fetch(`${process.env.AGENDA_SERVICE_URL}/agenda/${dto.id_agenda}/status`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ estado: 'reservado' })
+        });
+      } catch (e) {
+        console.error('Error al actualizar estado de agenda:', e);
+      }
+    }
+
     return cita as CreateCitaResponse;
   }
 }
