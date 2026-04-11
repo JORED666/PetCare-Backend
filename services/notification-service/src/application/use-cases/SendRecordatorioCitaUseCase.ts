@@ -1,4 +1,3 @@
-// application/use-cases/SendRecordatorioCitaUseCase.ts
 import { and, between, eq } from 'drizzle-orm';
 import { db } from '../../infrastructure/db/database';
 import { citas } from '../../infrastructure/db/drizzle/citas.schema';
@@ -12,6 +11,15 @@ export class SendRecordatorioCitaUseCase {
     const en24h  = new Date(ahora.getTime() + 24 * 60 * 60 * 1000);
     const margen = new Date(en24h.getTime() + 5 * 60 * 1000);
 
+    console.log(`🕐 Buscando citas 24h entre: ${en24h.toISOString()} y ${margen.toISOString()}`);
+
+    const todasConfirmadas = await db
+      .select({ id_cita: citas.id_cita, fecha: citas.fecha, estado: citas.estado })
+      .from(citas)
+      .where(eq(citas.estado, 'CONFIRMADA'));
+
+    console.log('📋 Citas CONFIRMADAS en BD:', todasConfirmadas.map(c => ({ id: c.id_cita, fecha: c.fecha?.toISOString() })));
+
     const citasPendientes = await db
       .select({
         id_cita: citas.id_cita,
@@ -23,7 +31,7 @@ export class SendRecordatorioCitaUseCase {
         and(
           between(citas.fecha, en24h, margen),
           eq(citas.estado, 'CONFIRMADA'),
-          eq(citas.recordatorio_24h_enviado, false)  // ← solo las que no se enviaron
+          eq(citas.recordatorio_24h_enviado, false)
         )
       );
 
@@ -47,7 +55,6 @@ export class SendRecordatorioCitaUseCase {
         }
       });
 
-      // ← marcar como enviado para no volver a mandar
       await db
         .update(citas)
         .set({ recordatorio_24h_enviado: true })
@@ -62,6 +69,15 @@ export class SendRecordatorioCitaUseCase {
     const en1h   = new Date(ahora.getTime() + 60 * 60 * 1000);
     const margen = new Date(en1h.getTime() + 5 * 60 * 1000);
 
+    console.log(`🕐 Buscando citas 1h entre: ${en1h.toISOString()} y ${margen.toISOString()}`);
+
+    const todasConfirmadas = await db
+      .select({ id_cita: citas.id_cita, fecha: citas.fecha, estado: citas.estado })
+      .from(citas)
+      .where(eq(citas.estado, 'CONFIRMADA'));
+
+    console.log('📋 Citas CONFIRMADAS en BD:', todasConfirmadas.map(c => ({ id: c.id_cita, fecha: c.fecha?.toISOString() })));
+
     const citasPendientes = await db
       .select({
         id_cita: citas.id_cita,
@@ -73,7 +89,7 @@ export class SendRecordatorioCitaUseCase {
         and(
           between(citas.fecha, en1h, margen),
           eq(citas.estado, 'CONFIRMADA'),
-          eq(citas.recordatorio_1h_enviado, false)  // ← solo las que no se enviaron
+          eq(citas.recordatorio_1h_enviado, false)
         )
       );
 
@@ -97,7 +113,6 @@ export class SendRecordatorioCitaUseCase {
         }
       });
 
-      // ← marcar como enviado
       await db
         .update(citas)
         .set({ recordatorio_1h_enviado: true })
