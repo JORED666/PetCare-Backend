@@ -10,6 +10,7 @@ export class GetPacientesDetalleController {
           m.id_mascota,
           m.nombre,
           m.especie,
+          m.raza,
           m.sexo,
           m.peso,
           m.fecha_nacimiento,
