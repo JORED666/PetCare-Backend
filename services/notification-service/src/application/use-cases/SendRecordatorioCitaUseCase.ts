@@ -42,8 +42,8 @@ export class SendRecordatorioCitaUseCase {
         type: 'RECORDATORIO_CITA',
         data: {
           nombre:   `${user.nombre} ${user.apellido}`,
-          fecha:    cita.fecha.toLocaleDateString('es-MX'),
-          hora:     cita.fecha.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }),
+          fecha:    cita.fecha.toLocaleDateString('es-MX', { timeZone: 'America/Mexico_City', day: '2-digit', month: 'long', year: 'numeric' }),
+          hora:     cita.fecha.toLocaleTimeString('es-MX', { timeZone: 'America/Mexico_City', hour: '2-digit', minute: '2-digit' }),
           servicio: 'Tu cita en PetCare'
         }
       });
@@ -90,11 +90,11 @@ export class SendRecordatorioCitaUseCase {
 
       await sendEmail({
         to:   user.email,
-        type: 'RECORDATORIO_CITA',
+        type: 'RECORDATORIO_1H',
         data: {
           nombre:   `${user.nombre} ${user.apellido}`,
-          fecha:    cita.fecha.toLocaleDateString('es-MX'),
-          hora:     cita.fecha.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }),
+          fecha:    cita.fecha.toLocaleDateString('es-MX', { timeZone: 'America/Mexico_City', day: '2-digit', month: 'long', year: 'numeric' }),
+          hora:     cita.fecha.toLocaleTimeString('es-MX', { timeZone: 'America/Mexico_City', hour: '2-digit', minute: '2-digit' }),
           servicio: 'Tu cita en PetCare'
         }
       });

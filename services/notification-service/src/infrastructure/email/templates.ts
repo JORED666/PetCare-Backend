@@ -84,7 +84,7 @@ export function getRecordatorioCitaTemplate(data: {
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #FF9800;">🐾 PetCare - Recordatorio de Cita</h2>
         <p>Hola <strong>${data.nombre}</strong>,</p>
-        <p>Te recordamos que tienes una cita <strong>mañana</strong>.</p>
+        <p>Te recordamos que tienes una cita <strong>en 24 horas</strong>.</p>
         <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin: 16px 0;">
           <p><strong>📅 Fecha:</strong> ${data.fecha}</p>
           <p><strong>🕐 Hora:</strong> ${data.hora}</p>
@@ -96,7 +96,7 @@ export function getRecordatorioCitaTemplate(data: {
     `
   };
 }
-// Agrega al final de templates.ts
+
 export function getRecordatorio1hTemplate(data: {
   nombre: string;
   fecha: string;
