@@ -12,12 +12,8 @@ export class RegisterUseCase {
     const existe = await this.userRepository.findByEmail(dto.email);
     if (existe) throw new Error('El email ya está registrado');
 
-    const passwordRegex = /^(?=.[a-zA-Z])(?=.\d)(?=.[!@#$%^&()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
-    if (!passwordRegex.test(dto.password)) {
-      throw new Error('La contraseña debe tener mínimo 8 caracteres, incluir letras, números y al menos un carácter especial.');
-    }
-
     const password = await hashPassword(dto.password);
+
     const nuevoUser = await this.userRepository.create({
       nombre:     dto.nombre,
       apellido:   dto.apellido,
@@ -29,11 +25,9 @@ export class RegisterUseCase {
     });
 
     const token = generateToken({
-      id:       nuevoUser.id,
-      email:    nuevoUser.email,
-      rol:      nuevoUser.rol,
-      nombre:   nuevoUser.nombre,
-      apellido: nuevoUser.apellido,
+      id:    nuevoUser.id,
+      email: nuevoUser.email,
+      rol:   nuevoUser.rol,
     });
 
     return {
